@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Uniwersytetu</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; border: 1px solid #ddd; padding: 15px; background: #f9f9f9; }
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;}
+        button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        
+        /* Wygląd pojedynczego artykułu */
+        .artykul { border-bottom: 1px solid #ccc; padding: 20px 0; display: flex; gap: 20px; }
+        .artykul img { max-width: 150px; height: auto; object-fit: cover; }
+    </style>
+</head>
+<body>
+
+    <h1>Zarządzanie Aktualnościami</h1>
+
+    <div class="form-group">
+        <h3>Dodaj nowy wpis</h3>
+        <input type="text" id="naglowek" placeholder="Tytuł artykułu">
+        <input type="text" id="zdjecie" placeholder="Link do zdjęcia (URL)">
+        <textarea id="tresc" rows="4" placeholder="Treść artykułu..."></textarea>
+        <button onclick="dodajArtykul()">Opublikuj</button>
+    </div>
+
+    <div id="lista-artykulow">
+        </div>
+
+    <script>
+    // 1. Funkcja do wyświetlania listy (żebyś widział co dodałeś)
+    async function pobierzArtykuly() {
+        const response = await fetch('/api/aktualnosci');
+        const data = await response.json();
+        
+        const lista = document.getElementById('lista-artykulow');
+        lista.innerHTML = ''; 
+
+        data.forEach(art => {
+            const div = document.createElement('div');
+            div.className = 'artykul';
+            // Tutaj wyświetlamy miniaturkę w panelu admina
+            div.innerHTML = `
+                <div style="flex: 1">
+                    <strong>${art.naglowek}</strong>
+                    <p>${art.tresc.substring(0, 50)}...</p>
+                    <img src="${art.zdjecieUrl}">
+                </div>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    // 2. Funkcja do dodawania (POST)
+    async function dodajArtykul() {
+        const naglowek = document.getElementById('naglowek').value;
+        const tresc = document.getElementById('tresc').value;
+        // Tutaj też poprawka na zdjecieUrl
+        const zdjecieUrl = document.getElementById('zdjecie').value || undefined;
+
+        const response = await fetch('/api/aktualnosci', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ naglowek, tresc, zdjecieUrl })
+        });
+
+        if (response.ok) {
+            alert('Dodano artykuł!');
+            pobierzArtykuly(); // Odświeżamy listę
+            // Czyścimy pola
+            document.getElementById('naglowek').value = '';
+            document.getElementById('tresc').value = '';
+            document.getElementById('zdjecie').value = '';
+        } else {
+            alert('Błąd! Sprawdź konsolę.');
+        }
+    }
+
+    // Na start ładujemy listę
+    pobierzArtykuly();
+</script>
+</body>
+</html>

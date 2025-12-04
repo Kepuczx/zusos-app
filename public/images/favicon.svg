@@ -1,0 +1,14 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+	<defs>
+		<image  width="64" height="64" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAAXNSR0IB2cksfwAAAU1QTFRFAAAA+pdC+JVB95dC9pdA9pND9pRE9pRD95RD95RE95VD95VE95RC9pNB9pNA9pM/9pM+9pM99pI89ZI79ZE39ZA29ZA19Y809Y4z9Y0y9Ywx9Ysx9Yow9Yov9YYu9YUu9YQt9YMr9YMq9YIo9YEj9X8h9YEe9Xwd83oZ9XoS+JVA+ZdD+ZdE+phE+pdD+phD+pdE+phF+pdC+pdB+pZB+pZA+ZU/+ZQ/+ZQ++ZM9+ZI8+ZE6+ZE5+JE5+JA4+I83+I41+I0094wz94sy94sx94ow94ku94gt9ogs9ocr9oYp9oUo9oQn9oMl9oEj9X8g9X0c9XsY9XgT9HUP7Csa7TIc7Csa7Csa7C8b7C4Z7Csa70Ui7kIR7C0Z70UW8mYO7TYY5UMP8GMM7DEZ6DMW7Csa7F4N7C4Z6DQW7Csa6VEP6y4Y5jgU4mcE30YMoNJFZgAAAG90Uk5TADaYz/Hy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLxz5g2lv////////////////////////////////////////////////////+WEPn/Hfn3C3Jf+tIz/1Om/+cny//xDbT/2jZW5Omb8gAAAK1JREFUeJzt18EKAVEYxfFzzI2FslDKM3geSSnKwkJ5GSnPYOF5PINSFkoKd9wvxVjJ/XY6p2bqNv1/s75EGt/Da2UMBKvfPg9pO2vT07MunUugdkew+oYiIvDbtgb0q7/9ddwQw5jfoyBHV0cP1Dlw9Wh4AQgQIECAAAECBAgQIEDAPwPjixOY8Ozpm8SUp/y+ZdfeGY+5fZtruzfPD3l5h6vn7R2LfRbQXabXA1afJ+jY86CdAAAAAElFTkSuQmCC"/>
+	</defs>
+	<style>
+		tspan { white-space:pre } 
+		.t0 { font-size: 70px;fill: #000000;font-weight: 400;font-family: "DejaVuSans", "DejaVu Sans" } 
+	</style>
+	<use id="Background" href="#img1" x="0" y="0"/>
+	<text id="U" style="transform: matrix(1,0,0,1,7,58)" >
+		<tspan x="0" y="0" class="t0">U</tspan><tspan  y="0" class="t0">
+</tspan>
+	</text>
+</svg>
