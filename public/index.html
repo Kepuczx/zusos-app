@@ -8,6 +8,7 @@
     <link rel="shortcut icon" href="images/favicon.svg" type="image/x-icon" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="style/aktualnosci.css" />
+    <script src="scripts/auth.js"></script>
     <style>
       nav .animation {
         position: absolute;
@@ -25,6 +26,7 @@
         transform: translateX(360px);
       }
     </style>
+
   </head>
   <body>
     <nav>
@@ -32,7 +34,7 @@
       <a href="sites/schedule.html">PLAN ZAJĘĆ</a>
       <a href="sites/grades.html">OCENY</a>
       <div class="animation"></div>
-      <div class="avatar"><img src="images/awatar.png" alt="awatar" /></div>
+      <div class="avatar"><img alt="awatar" /></div>
       <div class="hamburger">
         <div class="stick first"></div>
         <div class="stick second"></div>
@@ -52,7 +54,7 @@
       <div class="avatar-links">
         <ul>
           <li><a href="sites/change_password.html">ZMIEŃ HASŁO</a></li>
-          <li><a href="#">WYLOGUJ SIĘ</a></li>
+          <li><a href="#" onclick="wyloguj()">WYLOGUJ SIĘ</a></li>
         </ul>
       </div>
       <script src="scripts/nav-click.js"></script>

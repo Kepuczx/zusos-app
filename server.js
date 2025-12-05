@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Aktualnosci = require('./models/aktualnosci');
+const Student = require('./models/Student');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,9 @@ mongoose.connect(MONGO_URI)
 
 app.use(express.static('public'));
 app.use(express.json());
+
+
+//AKTUALNOSCI
 
 app.get('/api/aktualnosci', async(req,res)=>{
     try{
@@ -39,6 +43,42 @@ app.post('/api/aktualnosci', async(req,res)=>{
 
     }
 });
+
+
+//STUDENT
+
+app.post('/api/login', async(req, res) =>{
+    const {login, haslo} = req.body;
+
+    try{
+        const student = await Student.findOne({login : login});
+
+        if(!student || student.haslo !== haslo){
+            return res.status(401).json({message: "Błędny login lub hasło"});
+        }
+        res.json({
+            imie: student.imie,
+            nazwisko: student.nazwisko,
+            zdjecieUrl: student.zdjecieUrl
+        });
+    }catch(error){
+        res.status(500).json({message: "Błąd serwera"});
+    }
+});
+
+app.post('/api/register', async(req,res)=>{
+    try{
+        const nowyStudent = new Student(req.body);
+        await nowyStudent.save();
+        res.json({message: "Dodano Studenta!"});
+
+    }catch(error){
+        res.json({message: error.message});
+    }
+})
+
+
+
 
 
 
