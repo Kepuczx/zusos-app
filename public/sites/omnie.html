@@ -4,27 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZUSOS</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZUSOS</title>
     <link rel="stylesheet" href="../style/mainstyles.css">
     <link rel="shortcut icon" href="images/favicon.svg" type="image/x-icon">
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../style/omnie.css">
     <script src="../scripts/auth.js"></script>
-    <style>
-        nav .animation{
-    position: absolute;
-    left: 366px;
-    width: 160px;
-    height: 50px;
-    background-color: #333a41;
-    border-radius: 10px;
-    transition: all 0.3s ease 0s;
-    }
-        nav a:nth-of-type(1):hover~.animation{
-        transform: translateX(-356px);
-    }
-        nav a:nth-of-type(2):hover~.animation{
-        transform: translateX(-178px);
-    }
-    </style>
+    <script src="../scripts/omnie.js"></script>
+    
 </head>
 <body>
     <nav>
@@ -59,7 +53,27 @@
         </div>
         <script src="../scripts/nav-click.js"></script>
 
-        <div class="main"></div>
+        <div class="main">
+            <div class="dane-container">
+                <div class="zdjecie"><img alt="twoje zdjecie"></div>
+                <div class="dane">
+                    <span id="imie">
+                        Imie: none
+                    </span>
+                    <span id="nazwisko">
+                        Nazwisko: none
+                    </span>
+                    <span id="indeks">
+                        Indeks: none
+                    </span>
+                    <span id="klasa">
+                        Klasa: none
+                    </span>
+                </div>
+            </div>
+
+
+        </div>
         
     </main>
     <div class="carousel">
@@ -86,5 +100,7 @@
         
         
     </footer>
+</body>
+</html>
 </body>
 </html>

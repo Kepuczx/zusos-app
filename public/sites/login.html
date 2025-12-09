@@ -74,6 +74,11 @@
                 localStorage.setItem('zalogowany', 'true');
                 localStorage.setItem('userAvatar', daneStudenta.zdjecieURL);
 
+                localStorage.setItem('userLogin', daneStudenta.login);
+                localStorage.setItem('userImie', daneStudenta.imie);
+                localStorage.setItem('userNazwisko', daneStudenta.nazwisko);
+                localStorage.setItem('userklasa', daneStudenta.klasa);
+
                 console.log("6. Przekierowuję na stronę główną...");
                 // Spróbujmy najpierw alertem, żeby upewnić się, że kod tu dotarł
                 // alert("Zalogowano! Kliknij OK, aby przejść dalej.");

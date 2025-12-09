@@ -59,7 +59,9 @@ app.post('/api/login', async(req, res) =>{
         res.json({
             imie: student.imie,
             nazwisko: student.nazwisko,
-            zdjecieUrl: student.zdjecieUrl
+            zdjecieURL: student.zdjecieURL,
+            klasa: student.klasa,
+            login: student.login
         });
     }catch(error){
         res.status(500).json({message: "Błąd serwera"});

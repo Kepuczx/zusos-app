@@ -40,6 +40,11 @@ function wyloguj() {
     // Czyścimy pamięć
     localStorage.removeItem('zalogowany');
     localStorage.removeItem('userAvatar');
+    localStorage.removeItem('userAvatar');
+    localStorage.removeItem('userLogin');
+    localStorage.removeItem('userImie');
+    localStorage.removeItem('userNazwisko');
+    localStorage.removeItem('userklasa');
     
     // Przekierowujemy do logowania
     window.location.href = '/sites/login.html';
