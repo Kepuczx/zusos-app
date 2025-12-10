@@ -12,7 +12,12 @@
         /* Wygląd pojedynczego artykułu */
         .artykul { border-bottom: 1px solid #ccc; padding: 20px 0; display: flex; gap: 20px; }
         .artykul img { max-width: 150px; height: auto; object-fit: cover; }
+        #lista-artykulow{
+            max-height: 50vh;
+            overflow-y: scroll;
+        }
     </style>
+    <script src="../scripts/admin_auth.js"></script>
 </head>
 <body>
 
@@ -81,5 +86,35 @@
     // Na start ładujemy listę
     pobierzArtykuly();
 </script>
+<hr>
+<div class="dodaj-studenta-sekcja">
+    <h3>Dodaj Nowego Użytkownika (Studenta)</h3>
+    <form id="addStudentForm">
+        
+        <label for="login">Login (Wymagany):</label>
+        <input type="text" id="login" name="login" required>
+
+        <label for="haslo">Hasło (Wymagane):</label>
+        <input type="password" name="haslo" id="haslo">
+            <br>
+        <label for="imie">Imię:</label>
+        <input type="text" id="imie" name="imie">
+
+        <label for="nazwisko">Nazwisko:</label>
+        <input type="text" id="nazwisko" name="nazwisko">
+
+        <label for="klasa">Klasa (Wymagana):</label>
+        <input type="text" id="klasa" name="klasa" required>
+
+        <label for="zdjecieURL">URL Zdjęcia (Opcjonalny, Domyślny: awatar.png):</label>
+        <input type="text" id="zdjecieURL" name="zdjecieURL" placeholder="np. /images/jan-kowalski.png">
+        
+        <button type="submit">Dodaj Studenta</button>
+        <p id="message"></p>
+    </form>
+</div>
+
+
+
 </body>
 </html>

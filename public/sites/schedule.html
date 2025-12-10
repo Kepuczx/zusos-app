@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZUSOS</title>
     <link rel="stylesheet" href="../style/mainstyles.css">
-    <link rel="shortcut icon" href="images/favicon.svg" type="image/x-icon">
+    <link rel="shortcut icon" href="../images/favicon.svg" type="image/x-icon">
     <link rel="stylesheet" href="../styles.css">
     <script src="../scripts/auth.js"></script>
+    <script src="../scripts/admin_site_link.js"></script>
     <style>
         nav .animation{
         position: absolute;
@@ -24,13 +25,17 @@
         nav a:nth-of-type(3):hover~.animation{
         transform: translateX(178px);
     }
+    nav a:nth-of-type(4):hover~.animation{
+        transform: translateX(388px) scaleX(1.5);
+    }
+
     </style>
 </head>
 <body>
     <nav>
         <a href="../index.html">AKTUALNOŚCI</a>
         <a href="schedule.html">PLAN ZAJĘĆ</a>
-        <a href="grades.html">OCENY</a>
+        <a id="oceny"href="grades.html">OCENY</a>
         <div class="animation"></div>
         <div class="avatar"><img src="../images/awatar.png" alt="awatar"></div>
         <div class="hamburger">
@@ -52,7 +57,7 @@
 
         <div class="avatar-links">
             <ul>
-                <li><a href="sites/omnie.html">O MNIE</a></li>
+                <li><a href="/sites/omnie.html">O MNIE</a></li>
                 <li><a href="change_password.html">ZMIEŃ HASŁO</a></li>
                 <li><a href="#" onclick="wyloguj()">WYLOGUJ SIĘ</a></li>
             </ul>

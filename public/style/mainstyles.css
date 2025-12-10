@@ -41,7 +41,9 @@ a {
 }
 
 .avatar img {
+  margin-top: 5px;
   height: 50px;
+  width: 50px;
   border-radius: 50%;
 
 }

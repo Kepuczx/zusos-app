@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="style/aktualnosci.css" />
     <script src="scripts/auth.js"></script>
+    <script src="scripts/admin_site_link.js"></script>
     <style>
       nav .animation {
         position: absolute;
@@ -25,6 +26,10 @@
       nav a:nth-of-type(3):hover ~ .animation {
         transform: translateX(360px);
       }
+      nav a:nth-of-type(4):hover ~ .animation {
+        transform: translateX(565px) scaleX(150%);
+
+      }
     </style>
 
   </head>
@@ -32,7 +37,7 @@
     <nav>
       <a href="index.html">AKTUALNOŚCI</a>
       <a href="sites/schedule.html">PLAN ZAJĘĆ</a>
-      <a href="sites/grades.html">OCENY</a>
+      <a id="oceny" href="sites/grades.html">OCENY</a>
       <div class="animation"></div>
       <div class="avatar"><img alt="awatar" /></div>
       <div class="hamburger">

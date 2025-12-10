@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZUSOS</title>
-</head>
-<body>
+
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,13 +11,14 @@
     <link rel="stylesheet" href="../style/omnie.css">
     <script src="../scripts/auth.js"></script>
     <script src="../scripts/omnie.js"></script>
+    <script src="../scripts/admin_site_link.js"></script>
     
 </head>
 <body>
     <nav>
         <a href="../index.html">AKTUALNOŚCI</a>
         <a href="schedule.html">PLAN ZAJĘĆ</a>
-        <a href="grades.html">OCENY</a>
+        <a id="oceny" href="grades.html">OCENY</a>
         <div class="animation"></div>
         <div class="avatar"><img src="../images/awatar.png" alt="awatar"></div>
         <div class="hamburger">
@@ -46,7 +40,7 @@
 
         <div class="avatar-links">
             <ul>
-                <li><a href="sites/omnie.html">O MNIE</a></li>
+                <li><a href="/sites/omnie.html">O MNIE</a></li>
                 <li><a href="change_password.html">ZMIEŃ HASŁO</a></li>
                 <li><a href="#" onclick="wyloguj()">WYLOGUJ SIĘ</a></li>
             </ul>
@@ -100,7 +94,5 @@
         
         
     </footer>
-</body>
-</html>
 </body>
 </html>

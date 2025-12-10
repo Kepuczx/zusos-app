@@ -28,6 +28,7 @@
     border-radius: 1%;
     display: block;
     width: 45%;
+    max-height: 50vh;
 
 }
 .main-container p{
