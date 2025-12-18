@@ -48,14 +48,17 @@ a {
 
 }
 .avatar {
-  position: absolute;
-  position: block;
+  position: fixed;
   right: 20px;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none; 
   -moz-user-select: none;    
   -ms-user-select: none; 
+
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .hamburger {
