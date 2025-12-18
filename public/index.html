@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZUSOS</title>
+    <link rel="stylesheet" href="style/mainstyles.css" />
+    <link rel="shortcut icon" href="images/favicon.svg" type="image/x-icon" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="style/aktualnosci.css" />
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/admin_site_link.js"></script>
+    <style>
+      nav .animation {
+        position: absolute;
+        left: 10px;
+        width: 160px;
+        height: 50px;
+        background-color: #333a41;
+        border-radius: 10px;
+        transition: all 0.3s ease 0s;
+      }
+      nav a:nth-of-type(2):hover ~ .animation {
+        transform: translateX(178px);
+      }
+      nav a:nth-of-type(3):hover ~ .animation {
+        transform: translateX(360px);
+      }
+      nav a:nth-of-type(4):hover ~ .animation {
+        transform: translateX(565px) scaleX(150%);
+
+      }
+    </style>
+
+  </head>
+  <body>
+    <nav>
+      <a href="index.html">AKTUALNOŚCI</a>
+      <a href="sites/schedule.html">PLAN ZAJĘĆ</a>
+      <a id="oceny" href="sites/grades.html">OCENY</a>
+      <div class="animation"></div>
+      <div class="avatar"><img alt="awatar" /></div>
+      <div class="hamburger">
+        <div class="stick first"></div>
+        <div class="stick second"></div>
+        <div class="stick third"></div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="nav-links">
+        <ul>
+          <li><a href="index.html">AKTUALNOŚCI</a></li>
+          <li><a href="sites/schedule.html">PLAN ZAJĘĆ</a></li>
+          <li id="liOceny"><a href="sites/grades.html">OCENY</a></li>
+        </ul>
+      </div>
+
+      <div class="avatar-links">
+        <ul>
+          <li><a href="sites/omnie.html">O MNIE</a></li>
+          <li><a href="sites/change_password.html">ZMIEŃ HASŁO</a></li>
+          <li><a href="#" onclick="wyloguj()">WYLOGUJ SIĘ</a></li>
+        </ul>
+      </div>
+      <script src="scripts/nav-click.js"></script>
+
+      <div class="main">
+        <div class="main-container">
+          <h1>Co dziś na śniadanie zjem?</h1>
+          <img src="images/budynekuwm.jpg" alt="budynekuwm" />
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
+            varius laoreet neque iaculis congue. Curabitur interdum ac nisl eu
+            vestibulum. Fusce at tellus at turpis dignissim sollicitudin.
+            Suspendisse porttitor eget nisi sit amet fermentum. Proin
+            scelerisque lobortis risus. Proin id purus finibus, bibendum tortor
+            id, faucibus velit. Pellentesque commodo, lorem ac pretium
+            consectetur, ligula sem rutrum lectus, eu mollis lectus lorem id
+            sapien.
+          </p>
+        </div>
+        
+    </div>
+    <script>
+            async function pobierzArtykuly() {
+              try {
+      // Upewnij się, że w server.js masz endpoint '/api/aktualnosci' (wcześniej robiliśmy '/api/artykuly')
+      const response = await fetch('/api/aktualnosci'); 
+      const data = await response.json();
+
+      // POPRAWKA 1: Używamy kropki (.main), bo w HTML masz class="main"
+      const lista = document.querySelector('.main'); 
+      
+      // Czyścimy "Lorem ipsum" przed załadowaniem prawdziwych danych
+      lista.innerHTML = ''; 
+
+      data.forEach(art => {
+        const div = document.createElement('div');
+        div.className = 'main-container';
+        
+        // POPRAWKA 2: art.zdjecieUrl (zgodnie z bazą danych), a nie zdjecieURL
+        // Dodatkowo: Zabezpieczenie, jeśli zdjęcia brak
+        const obrazek = art.zdjecieUrl ? `<img src="${art.zdjecieUrl}" alt="Obrazek">` : '';
+
+        div.innerHTML = `
+          <h1>${art.naglowek}</h1>
+          ${obrazek}
+          <p>${art.tresc}</p>
+        `;
+        lista.appendChild(div);
+
+        observer.observe(div);
+        });
+          } catch (error) {
+           console.error("Błąd pobierania:", error);
+         }
+          // POPRAWKA 3: Usunąłem stąd 'pobierzArtykuly()', żeby nie było pętli
+      }
+
+         // Wywołujemy funkcję RAZ przy starcie strony
+          pobierzArtykuly();
+        </script>
+      
+
+    </main>
+    <div class="carousel">
+      <div class="group">
+        <div class="card"><a href="https://x.com/uwm_olsztyn"><img src="images/x-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://www.facebook.com/UWM.Olsztyn/?locale=pl_PL"><img src="images/facebook-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://uwm.edu.pl/"><img src="images/uwm-logo.jpg" alt="x-logo"></a></div>
+        <div class="card"><a href="https://moodle.uwm.edu.pl/"><img src="images/images-removebg-preview.png" alt="x-logo"></a></div>
+      </div>
+      <div  aria-hidden class="group">
+        <div class="card"><a href="https://x.com/uwm_olsztyn"><img src="images/x-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://www.facebook.com/UWM.Olsztyn/?locale=pl_PL"><img src="images/facebook-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://uwm.edu.pl/"><img src="images/uwm-logo.jpg" alt="x-logo"></a></div>
+        <div class="card"><a href="https://moodle.uwm.edu.pl/"><img src="images/images-removebg-preview.png" alt="x-logo"></a></div>
+
+      </div>
+    </div>
+    <script src="scripts/main-elem-animation.js"></script>
+    <footer>
+      <address>
+        <p>
+          Kontakt: zusos@gmail.com <br />
+          +48 012 345 678
+        </p>
+      </address>
+      <span>Wszelkie prawa zastrzeżone © 2025</span>
+    </footer>
+  </body>
+</html>

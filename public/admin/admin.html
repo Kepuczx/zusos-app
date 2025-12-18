@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Uniwersytetu</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; border: 1px solid #ddd; padding: 15px; background: #f9f9f9; }
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;}
+        button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        
+        /* Wygląd pojedynczego artykułu */
+        .artykul { border-bottom: 1px solid #ccc; padding: 20px 0; display: flex; gap: 20px; }
+        .artykul img { max-width: 150px; height: auto; object-fit: cover; }
+        #lista-artykulow{
+            max-height: 50vh;
+            overflow-y: scroll;
+        }
+    </style>
+    <script src="../scripts/admin_auth.js"></script>
+</head>
+<body>
+
+    <h1>Zarządzanie Aktualnościami</h1>
+
+    <div class="form-group">
+        <h3>Dodaj nowy wpis</h3>
+        <input type="text" id="naglowek" placeholder="Tytuł artykułu">
+        <input type="text" id="zdjecie" placeholder="Link do zdjęcia (URL)">
+        <textarea id="tresc" rows="4" placeholder="Treść artykułu..."></textarea>
+        <button onclick="dodajArtykul()">Opublikuj</button>
+    </div>
+
+    <div id="lista-artykulow">
+        </div>
+
+    <script>
+    // 1. Funkcja do wyświetlania listy (żebyś widział co dodałeś)
+    async function pobierzArtykuly() {
+        const response = await fetch('/api/aktualnosci');
+        const data = await response.json();
+        
+        const lista = document.getElementById('lista-artykulow');
+        lista.innerHTML = ''; 
+
+        data.forEach(art => {
+            const div = document.createElement('div');
+            div.className = 'artykul';
+            // Tutaj wyświetlamy miniaturkę w panelu admina
+            div.innerHTML = `
+                <div style="flex: 1">
+                    <strong>${art.naglowek}</strong>
+                    <p>${art.tresc.substring(0, 50)}...</p>
+                    <img src="${art.zdjecieUrl}">
+                </div>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    // 2. Funkcja do dodawania (POST)
+    async function dodajArtykul() {
+        const naglowek = document.getElementById('naglowek').value;
+        const tresc = document.getElementById('tresc').value;
+        // Tutaj też poprawka na zdjecieUrl
+        const zdjecieUrl = document.getElementById('zdjecie').value || undefined;
+
+        const response = await fetch('/api/aktualnosci', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ naglowek, tresc, zdjecieUrl })
+        });
+
+        if (response.ok) {
+            alert('Dodano artykuł!');
+            pobierzArtykuly(); // Odświeżamy listę
+            // Czyścimy pola
+            document.getElementById('naglowek').value = '';
+            document.getElementById('tresc').value = '';
+            document.getElementById('zdjecie').value = '';
+        } else {
+            alert('Błąd! Sprawdź konsolę.');
+        }
+    }
+
+    // Na start ładujemy listę
+    pobierzArtykuly();
+</script>
+<hr>
+<div class="dodaj-studenta-sekcja">
+    <h3>Dodaj Nowego Użytkownika (Studenta)</h3>
+    <form id="addStudentForm">
+        
+        <label for="login">Login (Wymagany):</label>
+        <input type="text" id="login" name="login" required>
+
+        <label for="haslo">Hasło (Wymagane):</label>
+        <input type="password" name="haslo" id="haslo">
+            <br>
+        <label for="imie">Imię:</label>
+        <input type="text" id="imie" name="imie">
+
+        <label for="nazwisko">Nazwisko:</label>
+        <input type="text" id="nazwisko" name="nazwisko">
+
+        <label for="klasa">Klasa (Wymagana):</label>
+        <input type="text" id="klasa" name="klasa" required>
+
+        <label for="zdjecieURL">URL Zdjęcia (Opcjonalny, Domyślny: awatar.png):</label>
+        <input type="text" id="zdjecieURL" name="zdjecieURL" placeholder="np. /images/jan-kowalski.png">
+        
+        <button type="submit" onclick="addUser()">Dodaj Studenta</button>
+        <p id="message"></p>
+    </form>
+</div>
+
+<script>
+
+    async function addUser() {
+        const login = document.getElementById('login').value;
+        const haslo = document.getElementById('haslo').value;
+        const imie = document.getElementById('imie').value;
+        const nazwisko = document.getElementById('nazwisko').value;
+        const klasa = document.getElementById('klasa').value;
+        const zdjecieURL = document.getElementById('zdjecieURL').value;
+
+        const response = await fetch('/api/register',{
+
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ login, haslo, imie, nazwisko, zdjecieURL, klasa})
+        });
+        if(response.ok){
+            alert('Dodano uzytkownika');
+
+        }else{
+            alert('Błąd! Nie udalo sie dodaj uzytkownika.');
+        }
+        
+    }
+
+</script>
+
+
+
+</body>
+</html>

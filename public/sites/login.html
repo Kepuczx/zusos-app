@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie</title>
+    <link rel="stylesheet" href="../style/loginstyles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="shortcut icon" href="../images/favicon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../scripts/auth.js"></script>
+</head>
+<body>
+    <main>
+        <div class="login-container">
+            
+            <form id="loginForm" onsubmit="zaloguj(event)">
+                <h1>Logowanie</h1>
+                <input type="text" name="login" id="login" placeholder="Identyfikator" required>
+                <input type="password" name="password" id="password" placeholder="Hasło" required>
+                
+                <span id="show" style="cursor: pointer;">Pokaż</span> <span class="blad" style="color: red; display: block; margin-top: 10px;"></span>
+                
+                <button type="submit" class="submit">ZALOGUJ SIĘ</button>
+            </form>
+            
+            </div>
+
+        <script>
+    // Obsługa przycisku "Pokaż hasło"
+    document.getElementById('show').addEventListener('click', function() {
+        const passInput = document.getElementById('password');
+        if (passInput.type === "password") {
+            passInput.type = "text";
+            this.textContent = "Ukryj";
+        } else {
+            passInput.type = "password";
+            this.textContent = "Pokaż";
+        }
+    });
+
+    async function zaloguj(event) {
+        // 1. ZATRZYMUJEMY przeładowanie strony
+        event.preventDefault(); 
+        console.log("1. Rozpoczynam logowanie...");
+
+        const login = document.getElementById('login').value;
+        const hasloInput = document.getElementById('password').value; 
+        const bladElem = document.querySelector('.blad');
+        
+        bladElem.textContent = "Sprawdzanie danych...";
+
+        try {
+            console.log("2. Wysyłam zapytanie do serwera...");
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login: login, haslo: hasloInput })
+            });
+
+            console.log("3. Otrzymałem odpowiedź status:", response.status);
+
+            if (response.ok) {
+                const daneStudenta = await response.json();
+                console.log("4. Pobrałem dane studenta:", daneStudenta);
+
+                // Sprawdzamy, czy dane są poprawne
+                if (!daneStudenta.zdjecieURL) {
+                    console.warn("UWAGA: Brak pola zdjecieUrl w odpowiedzi!");
+                }
+
+                // Zapisywanie
+                console.log("5. Zapisuję do LocalStorage...");
+                localStorage.setItem('zalogowany', 'true');
+                localStorage.setItem('userAvatar', daneStudenta.zdjecieURL);
+
+                localStorage.setItem('userLogin', daneStudenta.login);
+                localStorage.setItem('userImie', daneStudenta.imie);
+                localStorage.setItem('userNazwisko', daneStudenta.nazwisko);
+                localStorage.setItem('userklasa', daneStudenta.klasa);
+
+                console.log("6. Przekierowuję na stronę główną...");
+                // Spróbujmy najpierw alertem, żeby upewnić się, że kod tu dotarł
+                // alert("Zalogowano! Kliknij OK, aby przejść dalej.");
+                
+                window.location.href = '../index.html'; 
+            } else {
+                console.log("Błąd logowania (złe hasło)");
+                bladElem.textContent = "Błędny login lub hasło!";
+            }
+        } catch (error) {
+            console.error("KRYTYCZNY BŁĄD:", error);
+            bladElem.textContent = "Błąd połączenia z serwerem.";
+        }
+    }
+</script>
+
+    </main>
+    <footer>
+        <address>
+           <p>Kontakt: zusos@gmail.com <br> 
+            +48 012 345 678</p>
+        </address>
+        <span>Wszelkie prawa zastrzeżone © 2025</span>
+    </footer>
+</body>
+</html>

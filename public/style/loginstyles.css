@@ -1,0 +1,169 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+
+body{
+    background-image: url("../images/background.jpg");
+    background-repeat: repeat;
+    background-size: 100% 100%;
+}
+.login-container{
+    width: min(600px, 80%);
+    height: 67vh;
+    margin-left: auto;
+    margin-right: auto;   
+    border-radius: 10px;
+    margin-top: 30vh;
+}
+form{
+    text-align: center;
+    backdrop-filter: blur(5px);
+    padding: min(50px, 5vh) 10px;
+    border-radius: 20px;
+    border: 2px solid rgb(35, 56, 87);
+    box-shadow: #333;
+    -webkit-box-shadow: 0px 0px 23px -4px rgba(66, 68, 90, 1);
+    -moz-box-shadow: 0px 0px 23px -4px rgba(66, 68, 90, 1);
+    box-shadow: 0px 0px 23px -4px rgba(66, 68, 90, 1);
+    z-index: 3;
+}
+form input{
+    width: 50%;
+    background: none;
+    border-radius: 10px;
+    margin-top: 20px;
+    height: 50px;
+    color: antiquewhite;
+    padding-left: 50px;
+    outline: none;
+    -webkit-box-shadow: inset 0px 0px 23px -4px rgba(66, 68, 90, 1);
+    -moz-box-shadow: inset 0px 0px 23px -4px rgba(66, 68, 90, 1);
+    box-shadow: inset 0px 0px 23px -4px rgba(66, 68, 90, 1);
+}
+form h1{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: -webkit-linear-gradient(45deg ,#e2e2e2, #1a1717);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+#login{
+    background-image: url("../images/login-icon.png");
+    background-repeat: no-repeat;
+    background-size: 50px 50px;
+}
+#password{
+    background-image: url("../images/lock-icon.svg");
+    background-repeat: no-repeat;
+    background-position: 5px;
+    background-size: 25px 25px;
+    background-position: 15px;
+    position: relative;
+    anchor-name: --password;
+}
+#repassword{
+    anchor-name: --repassword;
+}
+#show{
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    position: fixed;
+    position-anchor: --password;
+    position-area: right;
+    translate: -150%;
+    user-select: none;
+}
+#show2{
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    position: fixed;
+    position-anchor: --repassword;
+    position-area: right;
+    translate: -150%;
+    user-select: none;
+}
+
+
+
+#repassword{
+    background-image: url("../images/lock-icon.svg");
+    background-repeat: no-repeat;
+    background-position: 5px;
+    background-size: 25px 25px;
+    background-position: 15px;
+}
+.submit{
+    width: 40%;
+    margin-top: 30px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: rgb(7, 4, 4);
+    opacity: 0.6;
+    color: white;
+    font-size: 20px;
+    outline: none;
+    border: none;
+    transition: opacity 0.3s ease;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin-left: 50%;
+    transform: translate(-60%);
+}
+.submit:hover{
+    opacity: 0.8;
+    cursor: pointer;
+    
+}
+
+.blad{
+    position: absolute;
+    display: block;
+    color: rgb(167, 22, 22);
+    left: 50%;
+    transform: translate(-50%);
+    white-space: nowrap;
+}
+
+footer{
+    background-color: #1a1717;
+    height: 10vh;
+    width: 100%;
+    justify-content: space-between;
+    
+}
+address{
+    color: aliceblue;
+    padding: 20px;
+    float: left;
+}
+footer span{
+    color: aliceblue;
+    float: right;
+    margin: 20px;
+}
+
+
+
+/* FOOTER */
+footer {
+    background-color: #1a1717;
+    width: 100%;
+    min-height: 10vh;
+    color: aliceblue;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    box-sizing: border-box;
+}
+
+footer address {
+    font-style: normal;
+}
+
+footer span {
+    font-size: 14px;
+}
