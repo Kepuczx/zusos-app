@@ -48,10 +48,14 @@ a {
 
 }
 .avatar {
-  position: absolute;
+  position: fixed;
   right: 20px;
   cursor: pointer;
   user-select: none;
+  z-index: 74367583647;
+  touch-action: manipulation;
+
+  -webkit-backface-visibility: hidden;
   -webkit-user-select: none; 
   -moz-user-select: none;    
   -ms-user-select: none; 
