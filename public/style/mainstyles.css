@@ -98,7 +98,7 @@ a {
 .nav-links {
   position: fixed;
   display: none;
-  top: 6vh;
+  top: 55px;
   z-index: 3;
   overflow-x: 0;
   transition: all 0.5s ease;
@@ -156,7 +156,7 @@ a {
 .avatar-links {
   display: none;
   position: fixed;
-  top: 6vh;
+  top: 55px;
   right: 0;
   z-index: 3;
   transition: 0.5s ease;
