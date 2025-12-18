@@ -51,12 +51,21 @@ app.post('/api/aktualnosci', async(req,res)=>{
 app.post('/api/login', async(req, res) =>{
     const {login, haslo} = req.body;
 
+    console.log("Próba logowania dla:", login); // LOG 1
+
     try{
+        // Sprawdzamy czy model Student jest poprawnie załadowany
+        if (!Student) {
+            throw new Error("Model Student nie został załadowany!");
+        }
+
         const student = await Student.findOne({login : login});
+        console.log("Wynik szukania w bazie:", student); // LOG 2
 
         if(!student || student.haslo !== haslo){
             return res.status(401).json({message: "Błędny login lub hasło"});
         }
+        
         res.json({
             imie: student.imie,
             nazwisko: student.nazwisko,
@@ -65,7 +74,9 @@ app.post('/api/login', async(req, res) =>{
             login: student.login
         });
     }catch(error){
-        res.status(500).json({message: "Błąd serwera"});
+        // TO JEST KLUCZOWE - wypisz błąd w konsoli serwera!
+        console.error("SZCZEGÓŁY BŁĘDU LOGOWANIA:", error); 
+        res.status(500).json({message: "Błąd serwera: " + error.message});
     }
 });
 
