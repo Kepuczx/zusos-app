@@ -48,7 +48,8 @@ a {
 
 }
 .avatar {
-  position: fixed;
+  position: absolute;
+  position: block;
   right: 20px;
   cursor: pointer;
   user-select: none;
