@@ -91,6 +91,32 @@ app.post('/api/register', async(req,res)=>{
     }
 })
 
+app.put('/api/zmien-haslo', async (req,res)=>{
+
+    const {login, noweHaslo} = req.body;
+
+    try{
+        const student = await Student.findOne({login:login});
+
+        if(!student){
+            return res.status(404).json({message: "Nie znaleziono użytkownika"});
+
+        }
+
+        student.haslo = noweHaslo;
+
+        await student.save();
+
+        res.json({message: "Haslo zostalo zmienione pomyślnie!"});
+
+    
+    }catch(error){
+        res.status(500).json({message: "Błąd serwera: " + error.message });
+
+    }
+});
+
+
 
 
 

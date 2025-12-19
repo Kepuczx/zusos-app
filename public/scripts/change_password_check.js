@@ -1,6 +1,6 @@
 const password = document.querySelector('#password');
 const repassword = document.querySelector('#repassword');
-const submit = document.querySelector('.submit');
+//const submit = document.querySelector('.submit');
 const bladMess = document.querySelector('.blad');
 const show = document.querySelector("#show");
 const show2 = document.querySelector("#show2");
@@ -28,8 +28,44 @@ show2.addEventListener("click", ()=>{
     }
 })
 
+async function zmienHaslo(){
+    const login = localStorage.getItem('userLogin');
+    const nowe = password.value;
+
+    try{
+    const response = await fetch('/api/zmien-haslo',{
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            login:login,
+            noweHaslo: nowe
+        })
+    });
+    const data = await response.json();
+
+    if(response.ok){
+        alert("Sukces: " + data.message);
+
+        password.value = "";
+        repassword.value ="";
+        bladMess.textContent = "";
+    }else{
+        alert("Błąd: " + data.message);
+    }
+    }catch(err){
+        console.error(err);
+        alert("Błąd połączenia z serwerem");
+    }
+
+    alert(data.message);
+}
+
+
+
 
 document.querySelector('#repasswordForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+
     let message;
     let correct = true;
     if(password.value.length < 6 || password.value.length > 20){
@@ -57,7 +93,13 @@ document.querySelector('#repasswordForm').addEventListener('submit', (e)=>{
 
     if(correct === false){
         bladMess.textContent = message;
-        e.preventDefault();
+        return;
+        
+        
+    }else{
+        zmienHaslo();
     }
+
+    
     
 })
