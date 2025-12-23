@@ -33,25 +33,25 @@ async function zmienHaslo(){
     const nowe = password.value;
 
     try{
-    const response = await fetch('/api/zmien-haslo',{
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            login:login,
-            noweHaslo: nowe
-        })
-    });
-    const data = await response.json();
-
-    if(response.ok){
-        alert("Sukces: " + data.message);
-
-        password.value = "";
-        repassword.value ="";
-        bladMess.textContent = "";
-    }else{
-        alert("Błąd: " + data.message);
-    }
+        const response = await fetch('/api/zmien-haslo',{
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                login:login,
+                noweHaslo: nowe
+            })
+        });
+        const data = await response.json();
+    
+        if(response.ok){
+            alert("Sukces: " + data.message);
+        
+            password.value = "";
+            repassword.value ="";
+            bladMess.textContent = "";
+        }else{
+            alert("Błąd: " + data.message);
+        }
     }catch(err){
         console.error(err);
         alert("Błąd połączenia z serwerem");

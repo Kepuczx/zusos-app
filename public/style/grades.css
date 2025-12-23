@@ -1,0 +1,49 @@
+.main{
+    position: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.grades-container{
+    width: fit-content;
+    margin: 0 auto;
+    padding: 5vh 0;
+    color: white;
+    border: 2px solid rgb(71, 145, 255);
+    padding: 30px;
+    border-radius: 25px;
+    -webkit-box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
+-moz-box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
+box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
+
+}
+
+.grades-container table{
+    border-collapse: collapse;
+}
+
+.grades-header{
+    width: fit-content;
+    border-bottom: 3px solid rgb(71, 145, 255);
+    font-weight: 1000;
+    margin-bottom: 15px;
+}
+.grades-container thead{
+    text-align: center;
+    color: grey;
+
+}
+
+.grades-container td{
+    padding: 7px 50px 10px 10px;
+    
+}
+.grades-container tbody tr{
+    border-bottom: 1px solid grey;
+}
+.grades-container tbody tr:hover{
+    background-color: rgb(255, 255, 255, 0.3);
+    transition: 0.5s;
+
+}
