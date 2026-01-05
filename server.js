@@ -117,6 +117,45 @@ app.put('/api/zmien-haslo', async (req,res)=>{
 });
 
 
+//Oceny
+
+// GET – wszystkie przedmioty z ocenami
+router.get('/', async (req, res) => {
+    const oceny = await Ocena.find();
+    res.json(oceny);
+});
+
+// POST – dodaj nowy przedmiot
+router.post('/', async (req, res) => {
+    const nowa = new Ocena(req.body);
+    await nowa.save();
+    res.status(201).json(nowa);
+});
+
+// POST – dodaj ocenę cząstkową
+router.post('/:id/ocena', async (req, res) => {
+    const { wartosc, opis } = req.body;
+
+    const ocena = await Ocena.findById(req.params.id);
+    ocena.oceny.push({ wartosc, opis });
+    await ocena.save();
+
+    res.json(ocena);
+});
+
+// PUT – ustaw ocenę końcową
+router.put('/:id/koncowa', async (req, res) => {
+    const { ocenaKoncowa } = req.body;
+
+    const ocena = await Ocena.findByIdAndUpdate(
+        req.params.id,
+        { ocenaKoncowa },
+        { new: true }
+    );
+
+    res.json(ocena);
+});
+
 
 
 
