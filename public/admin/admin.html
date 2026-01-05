@@ -141,6 +141,81 @@
 
 </script>
 
+<hr>
+
+<div class="form-group">
+    <h3>Dodaj Zajęcia</h3>
+
+    <input type="text" id="z_nazwa" placeholder="Nazwa zajęć (np. Algorytmy)">
+    <input type="text" id="z_prowadzacy" placeholder="Prowadzący">
+    <input type="text" id="z_dzien" placeholder="Dzień (np. Poniedziałek)">
+    <input type="time" id="z_od">
+    <input type="time" id="z_do">
+    <input type="text" id="z_sala" placeholder="Sala">
+    <input type="text" id="z_typ" placeholder="Typ (wykład / lab / ćwiczenia)">
+
+    <button onclick="dodajZajecia()">Dodaj zajęcia</button>
+</div>
+
+<div id="lista-zajec"></div>
+
+<script>
+    async function pobierzZajecia() {
+        const res = await fetch('/api/zajecia');
+        const data = await res.json();
+
+        const lista = document.getElementById('lista-zajec');
+        lista.innerHTML = '<h3>Lista zajęć</h3>';
+
+        data.forEach(z => {
+            const div = document.createElement('div');
+            div.className = 'artykul';
+            div.innerHTML = `
+                <div style="flex:1">
+                    <strong>${z.nazwa}</strong><br>
+                    ${z.dzien} ${z.godzinaOd}–${z.godzinaDo}<br>
+                    ${z.typ} | sala ${z.sala}<br>
+                    <small>${z.prowadzacy}</small>
+                </div>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    async function dodajZajecia() {
+        const body = {
+            nazwa: document.getElementById('z_nazwa').value,
+            prowadzacy: document.getElementById('z_prowadzacy').value,
+            dzien: document.getElementById('z_dzien').value,
+            godzinaOd: document.getElementById('z_od').value,
+            godzinaDo: document.getElementById('z_do').value,
+            sala: document.getElementById('z_sala').value,
+            typ: document.getElementById('z_typ').value
+        };
+
+        const res = await fetch('/api/zajecia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            alert('Dodano zajęcia 💪');
+            pobierzZajecia();
+
+            Object.keys(body).forEach(id => {
+                const el = document.getElementById('z_' + id.split(/(?=[A-Z])/)[0]);
+                if (el) el.value = '';
+            });
+        } else {
+            alert('Błąd przy dodawaniu zajęć 😬');
+        }
+    }
+
+    pobierzZajecia();
+</script>
+
+
 
 
 </body>

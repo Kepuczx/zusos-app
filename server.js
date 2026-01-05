@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Aktualnosci = require('./models/aktualnosci');
 const Student = require('./models/Student');
+const { applyTimestamps } = require('./models/Oceny');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -120,20 +121,20 @@ app.put('/api/zmien-haslo', async (req,res)=>{
 //Oceny
 
 // GET – wszystkie przedmioty z ocenami
-router.get('/', async (req, res) => {
+app.get('/', async (req, res) => {
     const oceny = await Ocena.find();
     res.json(oceny);
 });
 
 // POST – dodaj nowy przedmiot
-router.post('/', async (req, res) => {
+app.post('/', async (req, res) => {
     const nowa = new Ocena(req.body);
     await nowa.save();
     res.status(201).json(nowa);
 });
 
 // POST – dodaj ocenę cząstkową
-router.post('/:id/ocena', async (req, res) => {
+app.post('/:id/ocena', async (req, res) => {
     const { wartosc, opis } = req.body;
 
     const ocena = await Ocena.findById(req.params.id);
@@ -144,7 +145,7 @@ router.post('/:id/ocena', async (req, res) => {
 });
 
 // PUT – ustaw ocenę końcową
-router.put('/:id/koncowa', async (req, res) => {
+app.put('/:id/koncowa', async (req, res) => {
     const { ocenaKoncowa } = req.body;
 
     const ocena = await Ocena.findByIdAndUpdate(
