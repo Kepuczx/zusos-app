@@ -1,0 +1,64 @@
+.schedule-container {
+    margin: 40px auto;
+    max-width: 1100px;
+    background: #1f252b;
+    border-radius: 12px;
+    padding: 20px;
+    color: #fff;
+    -webkit-box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
+  -moz-box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
+  box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
+
+}
+
+.schedule-header,
+.schedule-row {
+    display: grid;
+    grid-template-columns: 80px repeat(5, 1fr);
+    gap: 10px;
+}
+
+.schedule-header {
+    margin-bottom: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.schedule-row {
+    min-height: 90px;
+    margin-bottom: 10px;
+}
+.hour {
+    font-weight: bold;
+    color: #aaa;
+}
+
+.lesson {
+    background: #2e3440;
+    color: #fff;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.lesson span {
+    opacity: 0.8;
+}
+
+.lesson:hover {
+    transform: scale(1.03);
+}
+
+/* typy zajęć */
+.lecture {
+    background: #3a82f7;
+}
+
+.lab {
+    background: #2fbf71;
+}
+
+.exercise {
+    background: #f7b731;
+    color: #000;
+}

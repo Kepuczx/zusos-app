@@ -142,80 +142,136 @@
 </script>
 
 <hr>
+<hr>
 
 <div class="form-group">
-    <h3>Dodaj Zajęcia</h3>
+    <h3 id="z_form_title">Dodaj zajęcia</h3>
 
-    <input type="text" id="z_nazwa" placeholder="Nazwa zajęć (np. Algorytmy)">
+    <input type="hidden" id="z_id">
+
+    <input type="text" id="z_nazwa" placeholder="Nazwa zajęć">
     <input type="text" id="z_prowadzacy" placeholder="Prowadzący">
     <input type="text" id="z_dzien" placeholder="Dzień (np. Poniedziałek)">
     <input type="time" id="z_od">
     <input type="time" id="z_do">
     <input type="text" id="z_sala" placeholder="Sala">
-    <input type="text" id="z_typ" placeholder="Typ (wykład / lab / ćwiczenia)">
+    <input type="text" id="z_grupa" placeholder="Grupa (np. 1A / lab1)">
 
-    <button onclick="dodajZajecia()">Dodaj zajęcia</button>
+    <button onclick="zapiszZajecia()">Zapisz</button>
+    <button onclick="anulujEdycje()" style="background:#999; display:none" id="cancelBtn">
+        Anuluj
+    </button>
 </div>
 
 <div id="lista-zajec"></div>
 
+
 <script>
-    async function pobierzZajecia() {
-        const res = await fetch('/api/zajecia');
-        const data = await res.json();
+let edytowaneId = null;
 
-        const lista = document.getElementById('lista-zajec');
-        lista.innerHTML = '<h3>Lista zajęć</h3>';
+async function pobierzZajecia() {
+    const res = await fetch('/api/zajecia');
+    const data = await res.json();
 
-        data.forEach(z => {
-            const div = document.createElement('div');
-            div.className = 'artykul';
-            div.innerHTML = `
-                <div style="flex:1">
-                    <strong>${z.nazwa}</strong><br>
-                    ${z.dzien} ${z.godzinaOd}–${z.godzinaDo}<br>
-                    ${z.typ} | sala ${z.sala}<br>
-                    <small>${z.prowadzacy}</small>
-                </div>
-            `;
-            lista.appendChild(div);
-        });
+    const lista = document.getElementById('lista-zajec');
+    lista.innerHTML = '<h3>Lista zajęć</h3>';
+
+    data.forEach(z => {
+        const div = document.createElement('div');
+        div.className = 'artykul';
+        div.innerHTML = `
+            <div style="flex:1">
+                <strong>${z.nazwa}</strong><br>
+                ${z.dzien} ${z.godzinaOd}–${z.godzinaDo}<br>
+                sala ${z.sala} | grupa ${z.grupaZaj}<br>
+                <small>${z.prowadzacy}</small><br><br>
+
+                <button onclick='edytujZajecia(${JSON.stringify(z)})'>✏️ Edytuj</button>
+                <button onclick="usunZajecia('${z._id}')" style="background:#dc3545">
+                    🗑️ Usuń
+                </button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+}
+
+
+// ➕ POST / ✏️ PUT
+async function zapiszZajecia() {
+    const body = {
+        nazwa: z_nazwa.value,
+        prowadzacy: z_prowadzacy.value,
+        dzien: z_dzien.value,
+        godzinaOd: z_od.value,
+        godzinaDo: z_do.value,
+        sala: z_sala.value,
+        grupaZaj: z_grupa.value
+    };
+
+    const method = edytowaneId ? 'PUT' : 'POST';
+    const url = edytowaneId ? `/api/zajecia/${edytowaneId}` : '/api/zajecia';
+
+    const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+        alert(edytowaneId ? 'Zajęcia zaktualizowane ✏️' : 'Dodano zajęcia ✅');
+        wyczyscFormularz();
+        pobierzZajecia();
+    } else {
+        alert('Błąd zapisu ❌');
     }
+}
 
-    async function dodajZajecia() {
-        const body = {
-            nazwa: document.getElementById('z_nazwa').value,
-            prowadzacy: document.getElementById('z_prowadzacy').value,
-            dzien: document.getElementById('z_dzien').value,
-            godzinaOd: document.getElementById('z_od').value,
-            godzinaDo: document.getElementById('z_do').value,
-            sala: document.getElementById('z_sala').value,
-            typ: document.getElementById('z_typ').value
-        };
 
-        const res = await fetch('/api/zajecia', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
+// ✏️ Edycja
+function edytujZajecia(z) {
+    edytowaneId = z._id;
 
-        if (res.ok) {
-            alert('Dodano zajęcia 💪');
-            pobierzZajecia();
+    z_form_title.innerText = 'Edytuj zajęcia';
+    cancelBtn.style.display = 'inline-block';
 
-            Object.keys(body).forEach(id => {
-                const el = document.getElementById('z_' + id.split(/(?=[A-Z])/)[0]);
-                if (el) el.value = '';
-            });
-        } else {
-            alert('Błąd przy dodawaniu zajęć 😬');
-        }
-    }
+    z_nazwa.value = z.nazwa;
+    z_prowadzacy.value = z.prowadzacy;
+    z_dzien.value = z.dzien;
+    z_od.value = z.godzinaOd;
+    z_do.value = z.godzinaDo;
+    z_sala.value = z.sala || '';
+    z_grupa.value = z.grupaZaj;
+}
 
+
+// ❌ Anuluj
+function anulujEdycje() {
+    wyczyscFormularz();
+}
+
+
+// 🗑️ DELETE
+async function usunZajecia(id) {
+    if (!confirm('Na pewno usunąć zajęcia?')) return;
+
+    await fetch(`/api/zajecia/${id}`, { method: 'DELETE' });
     pobierzZajecia();
+}
+
+
+// 🧹 Reset
+function wyczyscFormularz() {
+    edytowaneId = null;
+    z_form_title.innerText = 'Dodaj zajęcia';
+    cancelBtn.style.display = 'none';
+
+    ['z_nazwa','z_prowadzacy','z_dzien','z_od','z_do','z_sala','z_grupa']
+        .forEach(id => document.getElementById(id).value = '');
+}
+
+pobierzZajecia();
 </script>
-
-
 
 
 </body>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Testowy - Dodawanie Ocen</title>
+    <style>
+        body { font-family: sans-serif; background: #222; color: #fff; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .box { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #444; }
+        h2 { margin-top: 0; color: #4CAF50; }
+        input { width: 95%; padding: 10px; margin: 5px 0; background: #444; border: 1px solid #555; color: white; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background: #4CAF50; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; border-radius: 5px; }
+        button:hover { background: #45a049; }
+        .log { margin-top: 10px; color: #aaa; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔧 Panel Administratora (TEST)</h1>
+
+    <div class="box">
+        <h2>1. Dodaj Nowy Przedmiot</h2>
+        <p>Tworzy "kartę przedmiotu" dla danego studenta.</p>
+        <form id="formPrzedmiot">
+            <input type="text" id="p_indeks" placeholder="Login Studenta (np. s12345)" required>
+            <input type="text" id="p_nazwa" placeholder="Nazwa Przedmiotu (np. Matematyka)" required>
+            <input type="text" id="p_prowadzacy" placeholder="Prowadzący (np. dr Kowalski)" required>
+            <input type="text" id="p_ects" placeholder="Punkty ECTS (np. 5)" required>
+            <button type="submit">Stwórz Przedmiot</button>
+        </form>
+        <div id="logPrzedmiot" class="log"></div>
+    </div>
+
+    <div class="box">
+        <h2>2. Dodaj Ocenę Cząstkową</h2>
+        <p>Dodaje ocenę do istniejącego przedmiotu.</p>
+        <form id="formOcena">
+            <input type="text" id="o_indeks" placeholder="Login Studenta" required>
+            <input type="text" id="o_przedmiot" placeholder="Nazwa Przedmiotu" required>
+            <hr style="border-color: #555">
+            <input type="text" id="o_wartosc" placeholder="Ocena (np. 4.5)" required>
+            <input type="text" id="o_opis" placeholder="Opis (np. Kolokwium 1)" required>
+            <button type="submit" style="background-color: #2196F3;">Dodaj Ocenę</button>
+        </form>
+        <div id="logOcena" class="log"></div>
+    </div>
+</div>
+
+<script>
+    // --- OBSŁUGA DODAWANIA PRZEDMIOTU ---
+    document.getElementById('formPrzedmiot').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const log = document.getElementById('logPrzedmiot');
+        log.textContent = "Wysyłanie...";
+
+        const data = {
+            indeks: document.getElementById('p_indeks').value,
+            przedmiot: document.getElementById('p_nazwa').value,
+            prowadzacy: document.getElementById('p_prowadzacy').value,
+            ects: document.getElementById('p_ects').value,
+            oceny: [] // Na start pusta lista ocen
+        };
+
+        try {
+            const res = await fetch('/api/dodaj-przedmiot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+            
+            if(res.ok) {
+                log.style.color = "#4CAF50";
+                log.textContent = "SUKCES: " + json.message;
+            } else {
+                throw new Error(json.message);
+            }
+        } catch (err) {
+            log.style.color = "red";
+            log.textContent = "BŁĄD: " + err.message;
+        }
+    });
+
+    // --- OBSŁUGA DODAWANIA OCENY CZĄSTKOWEJ ---
+    document.getElementById('formOcena').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const log = document.getElementById('logOcena');
+        log.textContent = "Wysyłanie...";
+
+        const data = {
+            indeks: document.getElementById('o_indeks').value,
+            przedmiot: document.getElementById('o_przedmiot').value,
+            nowaOcena: {
+                wartosc: document.getElementById('o_wartosc').value,
+                opis: document.getElementById('o_opis').value
+            }
+        };
+
+        try {
+            const res = await fetch('/api/dodaj-ocene-czastkowa', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+
+            if(res.ok) {
+                log.style.color = "#2196F3";
+                log.textContent = "SUKCES: " + json.message;
+            } else {
+                throw new Error(json.message);
+            }
+        } catch (err) {
+            log.style.color = "red";
+            log.textContent = "BŁĄD: " + err.message;
+        }
+    });
+</script>
+
+</body>
+</html>

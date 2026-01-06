@@ -20,7 +20,7 @@ const ocenaCzastkowaSchema = new mongoose.Schema({
 const ocenaSchema = new mongoose.Schema({
     indeks:{type: String, required: true},
     przedmiot:{type: String, required:true},
-    prowadzący:{type: String, required:true},
+    prowadzacy:{type: String, required:true},
     ects:{type: String, required: true},
     oceny:[ocenaCzastkowaSchema],
     ocenaKoncowa:{type:String, default: null}

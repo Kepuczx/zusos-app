@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Aktualnosci = require('./models/aktualnosci');
 const Student = require('./models/Student');
 const Ocena = require('./models/Ocena');
+const Zajecia = require('./models/zajecia');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -138,46 +139,153 @@ app.get('/api/oceny/:indeks', async (req, res) => {
 
 // POST – dodaj nowy przedmiot
 app.post('/api/dodaj-przedmiot', async (req, res) => {
-    try{
-        const nowaOcena = new Ocena({
-            indeks: req.body.indeks, 
-            przedmiot: req.body.przedmiot,
-            prowadzący: req.body.prowadzący,
-            ects: req.body.ects,
-            oceny: req.body.oceny,     
-            ocenaKoncowa: req.body.ocenaKoncowa
+    console.log("1. Przyszło zapytanie POST /api/dodaj-przedmiot");
+    console.log("2. Otrzymane dane (req.body):", req.body);
 
+    try {
+        const nowaOcena = new Ocena({
+            indeks: req.body.indeks,
+            przedmiot: req.body.przedmiot,
+            prowadzacy: req.body.prowadzacy, // Upewnij się, że nazwa pola pasuje do modelu!
+            ects: req.body.ects,
+            oceny: req.body.oceny || [], 
+            ocenaKoncowa: req.body.ocenaKoncowa
         });
-    }
-    catch(error){
-        res.status(400).json({message: "Błąd dodawania przedmiotu: " + error.message});
+
+        console.log("3. Próba zapisu do bazy...");
+        await nowaOcena.save();
+        
+        console.log("4. SUKCES! Zapisano.");
+        res.status(201).json({ message: "Przedmiot dodany pomyślnie!" });
+
+    } catch (error) {
+        console.error("5. BŁĄD KRYTYCZNY:", error); // <-- To pokaże nam przyczynę w terminalu
+        res.status(400).json({ message: "Błąd serwera: " + error.message });
     }
 });
 
-// POST – dodaj ocenę cząstkową
-app.post('/api/dodaj-ocene-czastkowa', async (req, res) => {
-    const {indeks, przedmiot, nowaOcena} = req.body;
+// --- Endpoint do dodawania oceny cząstkowej ---
+app.put('/api/dodaj-ocene-czastkowa', async (req, res) => {
+    // 1. Pobieramy dane z formularza
+    const { indeks, przedmiot, nowaOcena } = req.body;
+    
+    // Logujemy dla pewności co przyszło
+    console.log("Dodawanie oceny dla:", indeks, przedmiot); 
+    console.log("Dane oceny:", nowaOcena);
 
     try {
-        const przedmiotDb = await Ocena.findOne({ indeks: indeks, przedmiot: przedmiot });
+        // 2. Szukamy przedmiotu tego studenta
+        // UWAGA: Musi się zgadzać INDEKS i NAZWA PRZEDMIOTU
+        const przedmiotDb = await Ocena.findOne({ 
+            indeks: indeks, 
+            przedmiot: przedmiot 
+        });
 
+        // 3. Sprawdzamy czy znaleziono
         if (!przedmiotDb) {
+            console.log("Nie znaleziono przedmiotu!");
             return res.status(404).json({ message: "Nie znaleziono takiego przedmiotu dla tego studenta" });
         }
 
-        // Dodajemy do tablicy (push)
-        przedmiotDb.oceny.push(nowaOcena);
+        // 4. Dodajemy ocenę do tablicy (push)
+        przedmiotDb.oceny.push({
+            wartosc: nowaOcena.wartosc,
+            opis: nowaOcena.opis,
+            data: new Date()
+        });
+
+        // 5. Zapisujemy zmiany
         await przedmiotDb.save();
 
+        console.log("Sukces! Ocena dodana.");
         res.json({ message: "Dodano ocenę cząstkową!" });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Błąd serwera:", error);
+        res.status(500).json({ message: "Błąd serwera: " + error.message });
     }
-
-
 });
 
+
+
+//ZAJECIA
+
+// GET – wszystkie zajęcia
+app.get('/api/zajecia', async (req, res) => {
+    try {
+        const zajecia = await Zajecia.find();
+        res.json(zajecia);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/plan', async (req, res) => {
+    try {
+        const { klasa, nazwisko } = req.query;
+
+        let filter = {};
+
+        if (klasa === 'Nauczyciel' || klasa === 'szlachta') {
+            if (!nazwisko) {
+                return res.json([]); // brak nazwiska = brak planu
+            }
+            filter = {
+                prowadzacy: { $regex: nazwisko, $options: 'i' }
+            };
+        } else {
+            filter = {
+                grupaZaj: klasa
+            };
+        }
+
+        const zajecia = await Zajecia.find(filter);
+        res.json(zajecia);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+// POST – dodaj zajęcia
+app.post('/api/zajecia', async (req, res) => {
+    console.log(req.body); // 👈 ZOBACZ CO PRZYCHODZI
+    try {
+        const zajecia = new Zajecia(req.body);
+        const zapisane = await zajecia.save();
+        res.status(201).json(zapisane);
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+
+// PUT – edycja zajęć
+app.put('/api/zajecia/:id', async (req, res) => {
+    try {
+        const updated = await Zajecia.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updated);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+
+// DELETE – usuń zajęcia
+app.delete('/api/zajecia/:id', async (req, res) => {
+    try {
+        await Zajecia.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Zajęcia usunięte 🗑️' });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
 
 
 
