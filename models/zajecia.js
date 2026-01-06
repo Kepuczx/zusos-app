@@ -23,6 +23,10 @@ const ZajeciaSchema = new mongoose.Schema({
     },
     sala: {
         type: String
+    },
+    grupaZaj:{
+        type: String,
+        required: true
     }
 }
 )

@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Aktualnosci = require('./models/aktualnosci');
 const Student = require('./models/Student');
-const { applyTimestamps } = require('./models/Oceny');
+const Ocena = require('./models/Ocena');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -121,27 +121,51 @@ app.put('/api/zmien-haslo', async (req,res)=>{
 //Oceny
 
 // GET – wszystkie przedmioty z ocenami
-app.get('/', async (req, res) => {
-    const oceny = await Ocena.find();
-    res.json(oceny);
+app.get('/api/oceny/:indeks', async (req, res) => {
+    try{
+        const indeksStudenta = req.params.indeks;
+
+        const oceny = await Ocena.find({ indeks: indeksStudenta});
+
+        res.json(oceny);
+    }
+    catch(error)
+    {
+        res.status(500).json({message: "Błąd pobierania ocen: " + error.message});
+
+    }
 });
 
 // POST – dodaj nowy przedmiot
-app.post('/', async (req, res) => {
-    const nowa = new Ocena(req.body);
-    await nowa.save();
-    res.status(201).json(nowa);
+app.post('/api/dodaj-przedmiot', async (req, res) => {
+    try{
+        const nowaOcena = new Ocena({
+            indeks: req.body.indeks, 
+            przedmiot: req.body.przedmiot,
+            prowadzący: req.body.prowadzący,
+            ects: req.body.ects,
+            oceny: req.body.oceny,     
+            ocenaKoncowa: req.body.ocenaKoncowa
+
+        });
+    }
+    catch(error){
+        res.status(400).json({message: "Błąd dodawania przedmiotu: " + error.message});
+    }
 });
 
 // POST – dodaj ocenę cząstkową
-app.post('/:id/ocena', async (req, res) => {
-    const { wartosc, opis } = req.body;
+app.post('/api/dodaj-ocene-czastkowa', async (req, res) => {
+    const {indeks, przedmiot, nowaOcena} = req.body;
 
-    const ocena = await Ocena.findById(req.params.id);
-    ocena.oceny.push({ wartosc, opis });
-    await ocena.save();
+    try{
+        const przedmiotDb = await Ocena.findOne({})
+    }
+    catch{
 
-    res.json(ocena);
+    }
+
+
 });
 
 // PUT – ustaw ocenę końcową
