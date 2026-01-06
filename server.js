@@ -158,28 +158,26 @@ app.post('/api/dodaj-przedmiot', async (req, res) => {
 app.post('/api/dodaj-ocene-czastkowa', async (req, res) => {
     const {indeks, przedmiot, nowaOcena} = req.body;
 
-    try{
-        const przedmiotDb = await Ocena.findOne({})
-    }
-    catch{
+    try {
+        const przedmiotDb = await Ocena.findOne({ indeks: indeks, przedmiot: przedmiot });
 
+        if (!przedmiotDb) {
+            return res.status(404).json({ message: "Nie znaleziono takiego przedmiotu dla tego studenta" });
+        }
+
+        // Dodajemy do tablicy (push)
+        przedmiotDb.oceny.push(nowaOcena);
+        await przedmiotDb.save();
+
+        res.json({ message: "Dodano ocenę cząstkową!" });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 
 
 });
 
-// PUT – ustaw ocenę końcową
-app.put('/:id/koncowa', async (req, res) => {
-    const { ocenaKoncowa } = req.body;
-
-    const ocena = await Ocena.findByIdAndUpdate(
-        req.params.id,
-        { ocenaKoncowa },
-        { new: true }
-    );
-
-    res.json(ocena);
-});
 
 
 
