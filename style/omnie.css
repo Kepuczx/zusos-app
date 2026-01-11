@@ -1,0 +1,25 @@
+.dane-container{
+    padding: 10px;
+    margin: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 187px);
+    gap: 20px;
+}
+.zdjecie img{
+    max-width: 200px;
+    max-height: 260px;
+}
+
+
+.dane{
+    width: 100%;
+    grid-template-columns: auto auto;
+    font-weight: 1000;
+    align-items: center;
+    justify-content: center;
+}
+.dane span{
+    display: block;
+    color: antiquewhite;
+    margin: 10px 0;
+}

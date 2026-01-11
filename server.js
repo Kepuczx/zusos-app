@@ -208,6 +208,17 @@ app.put('/api/dodaj-ocene-czastkowa', async (req, res) => {
 });
 
 
+// GET: Pobierz listę wszystkich unikalnych przedmiotów w systemie
+app.get('/api/lista-przedmiotow', async (req, res) => {
+    try {
+        // "distinct" wyciąga unikalne wartości z pola "przedmiot"
+        const przedmioty = await Ocena.distinct("przedmiot");
+        res.json(przedmioty);
+    } catch (error) {
+        res.status(500).json({ message: "Błąd: " + error.message });
+    }
+});
+
 // 1. GET: Pobierz wszystkie oceny wystawione przez konkretnego nauczyciela
 app.get('/api/nauczyciel/wystawione-oceny/:nauczycielId', async (req, res) => {
     const { nauczycielId } = req.params;

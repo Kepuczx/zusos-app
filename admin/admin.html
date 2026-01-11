@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Uniwersytetu</title>
+    <link rel="icon" href="../images/uwm-logo.jpg" type="image/png">
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; border: 1px solid #ddd; padding: 15px; background: #f9f9f9; }
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;}
+        button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        
+        /* Wygląd pojedynczego artykułu */
+        .artykul { border-bottom: 1px solid #ccc; padding: 20px 0; display: flex; gap: 20px; }
+        .artykul img { max-width: 150px; height: auto; object-fit: cover; }
+        #lista-artykulow{
+            max-height: 50vh;
+            overflow-y: scroll;
+        }
+    </style>
+    <script src="../scripts/admin_auth.js"></script>
+</head>
+<body>
+
+    <h1>Zarządzanie Aktualnościami</h1>
+
+    <div class="form-group">
+        <h3>Dodaj nowy wpis</h3>
+        <input type="text" id="naglowek" placeholder="Tytuł artykułu">
+        <input type="text" id="zdjecie" placeholder="Link do zdjęcia (URL)">
+        <textarea id="tresc" rows="4" placeholder="Treść artykułu..."></textarea>
+        <button onclick="dodajArtykul()">Opublikuj</button>
+    </div>
+
+    <div id="lista-artykulow">
+        </div>
+
+    <script>
+    // 1. Funkcja do wyświetlania listy (żebyś widział co dodałeś)
+    async function pobierzArtykuly() {
+        const response = await fetch('/api/aktualnosci');
+        const data = await response.json();
+        
+        const lista = document.getElementById('lista-artykulow');
+        lista.innerHTML = ''; 
+
+        data.forEach(art => {
+            const div = document.createElement('div');
+            div.className = 'artykul';
+            // Tutaj wyświetlamy miniaturkę w panelu admina
+            div.innerHTML = `
+                <div style="flex: 1">
+                    <strong>${art.naglowek}</strong>
+                    <p>${art.tresc.substring(0, 50)}...</p>
+                    <img src="${art.zdjecieUrl}">
+                </div>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    // 2. Funkcja do dodawania (POST)
+    async function dodajArtykul() {
+        const naglowek = document.getElementById('naglowek').value;
+        const tresc = document.getElementById('tresc').value;
+        // Tutaj też poprawka na zdjecieUrl
+        const zdjecieUrl = document.getElementById('zdjecie').value || undefined;
+
+        const response = await fetch('/api/aktualnosci', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ naglowek, tresc, zdjecieUrl })
+        });
+
+        if (response.ok) {
+            alert('Dodano artykuł!');
+            pobierzArtykuly(); // Odświeżamy listę
+            // Czyścimy pola
+            document.getElementById('naglowek').value = '';
+            document.getElementById('tresc').value = '';
+            document.getElementById('zdjecie').value = '';
+        } else {
+            alert('Błąd! Sprawdź konsolę.');
+        }
+    }
+
+    // Na start ładujemy listę
+    pobierzArtykuly();
+</script>
+<hr>
+<div class="dodaj-studenta-sekcja">
+    <h3>Dodaj Nowego Użytkownika (Studenta)</h3>
+    <form id="addStudentForm">
+        
+        <label for="login">Login (Wymagany):</label>
+        <input type="text" id="login" name="login" required>
+
+        <label for="haslo">Hasło (Wymagane):</label>
+        <input type="password" name="haslo" id="haslo">
+            <br>
+        <label for="imie">Imię:</label>
+        <input type="text" id="imie" name="imie">
+
+        <label for="nazwisko">Nazwisko:</label>
+        <input type="text" id="nazwisko" name="nazwisko">
+
+        <label for="klasa">Klasa (Wymagana):</label>
+        <input type="text" id="klasa" name="klasa" required>
+
+        <label for="zdjecieURL">URL Zdjęcia (Opcjonalny, Domyślny: awatar.png):</label>
+        <input type="text" id="zdjecieURL" name="zdjecieURL" placeholder="np. /images/jan-kowalski.png">
+        
+        <button type="submit" onclick="addUser()">Dodaj Studenta</button>
+        <p id="message"></p>
+    </form>
+</div>
+
+<script>
+
+    async function addUser() {
+        const login = document.getElementById('login').value;
+        const haslo = document.getElementById('haslo').value;
+        const imie = document.getElementById('imie').value;
+        const nazwisko = document.getElementById('nazwisko').value;
+        const klasa = document.getElementById('klasa').value;
+        const zdjecieURL = document.getElementById('zdjecieURL').value;
+
+        const response = await fetch('/api/register',{
+
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ login, haslo, imie, nazwisko, zdjecieURL, klasa})
+        });
+        if(response.ok){
+            alert('Dodano uzytkownika');
+
+        }else{
+            alert('Błąd! Nie udalo sie dodaj uzytkownika.');
+        }
+        
+    }
+
+</script>
+
+<hr>
+<hr>
+
+<div class="form-group">
+    <h3 id="z_form_title">Dodaj zajęcia</h3>
+
+    <input type="hidden" id="z_id">
+
+    <input type="text" id="z_nazwa" placeholder="Nazwa zajęć">
+    <input type="text" id="z_prowadzacy" placeholder="Prowadzący">
+    <input type="text" id="z_dzien" placeholder="Dzień (np. Poniedziałek)">
+    <input type="time" id="z_od">
+    <input type="time" id="z_do">
+    <input type="text" id="z_sala" placeholder="Sala">
+    <input type="text" id="z_grupa" placeholder="Grupa (np. 1A / lab1)">
+
+    <button onclick="zapiszZajecia()">Zapisz</button>
+    <button onclick="anulujEdycje()" style="background:#999; display:none" id="cancelBtn">
+        Anuluj
+    </button>
+</div>
+
+<div id="lista-zajec"></div>
+
+
+<script>
+let edytowaneId = null;
+
+async function pobierzZajecia() {
+    const res = await fetch('/api/zajecia');
+    const data = await res.json();
+
+    const lista = document.getElementById('lista-zajec');
+    lista.innerHTML = '<h3>Lista zajęć</h3>';
+
+    data.forEach(z => {
+        const div = document.createElement('div');
+        div.className = 'artykul';
+        div.innerHTML = `
+            <div style="flex:1">
+                <strong>${z.nazwa}</strong><br>
+                ${z.dzien} ${z.godzinaOd}–${z.godzinaDo}<br>
+                sala ${z.sala} | grupa ${z.grupaZaj}<br>
+                <small>${z.prowadzacy}</small><br><br>
+
+                <button onclick='edytujZajecia(${JSON.stringify(z)})'>✏️ Edytuj</button>
+                <button onclick="usunZajecia('${z._id}')" style="background:#dc3545">
+                    🗑️ Usuń
+                </button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+}
+
+
+// ➕ POST / ✏️ PUT
+async function zapiszZajecia() {
+    const body = {
+        nazwa: z_nazwa.value,
+        prowadzacy: z_prowadzacy.value,
+        dzien: z_dzien.value,
+        godzinaOd: z_od.value,
+        godzinaDo: z_do.value,
+        sala: z_sala.value,
+        grupaZaj: z_grupa.value
+    };
+
+    const method = edytowaneId ? 'PUT' : 'POST';
+    const url = edytowaneId ? `/api/zajecia/${edytowaneId}` : '/api/zajecia';
+
+    const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+        alert(edytowaneId ? 'Zajęcia zaktualizowane ✏️' : 'Dodano zajęcia ✅');
+        wyczyscFormularz();
+        pobierzZajecia();
+    } else {
+        alert('Błąd zapisu ❌');
+    }
+}
+
+
+// ✏️ Edycja
+function edytujZajecia(z) {
+    edytowaneId = z._id;
+
+    z_form_title.innerText = 'Edytuj zajęcia';
+    cancelBtn.style.display = 'inline-block';
+
+    z_nazwa.value = z.nazwa;
+    z_prowadzacy.value = z.prowadzacy;
+    z_dzien.value = z.dzien;
+    z_od.value = z.godzinaOd;
+    z_do.value = z.godzinaDo;
+    z_sala.value = z.sala || '';
+    z_grupa.value = z.grupaZaj;
+}
+
+
+// ❌ Anuluj
+function anulujEdycje() {
+    wyczyscFormularz();
+}
+
+
+// 🗑️ DELETE
+async function usunZajecia(id) {
+    if (!confirm('Na pewno usunąć zajęcia?')) return;
+
+    await fetch(`/api/zajecia/${id}`, { method: 'DELETE' });
+    pobierzZajecia();
+}
+
+
+// 🧹 Reset
+function wyczyscFormularz() {
+    edytowaneId = null;
+    z_form_title.innerText = 'Dodaj zajęcia';
+    cancelBtn.style.display = 'none';
+
+    ['z_nazwa','z_prowadzacy','z_dzien','z_od','z_do','z_sala','z_grupa']
+        .forEach(id => document.getElementById(id).value = '');
+}
+
+pobierzZajecia();
+</script>
+<hr>
+
+    <div class="box grades-container">
+        <h2>Dodaj Ucznia Do Przedmiotu</h2>
+        <form id="formPrzedmiot">
+            <input type="text" id="p_indeks" placeholder="Login Studenta (np. s12345)" required>
+            <input type="text" id="p_nazwa" placeholder="Nazwa Przedmiotu (np. Matematyka)" required>
+            <input type="text" id="p_prowadzacy" placeholder="Prowadzący (np. dr Kowalski)" required>
+            <input type="text" id="p_ects" placeholder="Punkty ECTS (np. 5)" required>
+            <button type="submit">DODAJ</button>
+        </form>
+        <div id="logPrzedmiot" class="log"></div>
+    </div>
+    <script>
+    // --- OBSŁUGA DODAWANIA PRZEDMIOTU ---
+    document.getElementById('formPrzedmiot').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const log = document.getElementById('logPrzedmiot');
+        log.textContent = "Wysyłanie...";
+
+        const data = {
+            indeks: document.getElementById('p_indeks').value,
+            przedmiot: document.getElementById('p_nazwa').value,
+            prowadzacy: document.getElementById('p_prowadzacy').value,
+            ects: document.getElementById('p_ects').value,
+            oceny: [] // Na start pusta lista ocen
+        };
+
+        try {
+            const res = await fetch('/api/dodaj-przedmiot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+            
+            if(res.ok) {
+                log.style.color = "#4CAF50";
+                log.textContent = "SUKCES: " + json.message;
+            } else {
+                throw new Error(json.message);
+            }
+        } catch (err) {
+            log.style.color = "red";
+            log.textContent = "BŁĄD: " + err.message;
+        }
+    });
+
+</script>
+
+
+</body>
+</html>
