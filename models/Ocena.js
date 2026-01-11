@@ -9,6 +9,9 @@ const ocenaCzastkowaSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    wstawil:{
+        type: String
+    },
     data:{
         type: Date,
         default: Date.now

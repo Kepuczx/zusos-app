@@ -4,38 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Testowy - Dodawanie Ocen</title>
-    <style>
-        body { font-family: sans-serif; background: #222; color: #fff; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .box { background: #333; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #444; }
-        h2 { margin-top: 0; color: #4CAF50; }
-        input { width: 95%; padding: 10px; margin: 5px 0; background: #444; border: 1px solid #555; color: white; border-radius: 5px; }
-        button { width: 100%; padding: 10px; background: #4CAF50; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; border-radius: 5px; }
-        button:hover { background: #45a049; }
-        .log { margin-top: 10px; color: #aaa; font-size: 0.9em; }
-    </style>
+    <link rel="stylesheet" href="style/grades.css">
 </head>
 <body>
 
 <div class="container">
     <h1>🔧 Panel Administratora (TEST)</h1>
 
-    <div class="box">
-        <h2>1. Dodaj Nowy Przedmiot</h2>
-        <p>Tworzy "kartę przedmiotu" dla danego studenta.</p>
+    <div class="box grades-container">
+        <h2>Dodaj Ucznia Do Przedmiotu</h2>
         <form id="formPrzedmiot">
             <input type="text" id="p_indeks" placeholder="Login Studenta (np. s12345)" required>
             <input type="text" id="p_nazwa" placeholder="Nazwa Przedmiotu (np. Matematyka)" required>
             <input type="text" id="p_prowadzacy" placeholder="Prowadzący (np. dr Kowalski)" required>
             <input type="text" id="p_ects" placeholder="Punkty ECTS (np. 5)" required>
-            <button type="submit">Stwórz Przedmiot</button>
+            <button type="submit">DODAJ</button>
         </form>
         <div id="logPrzedmiot" class="log"></div>
     </div>
 
-    <div class="box">
-        <h2>2. Dodaj Ocenę Cząstkową</h2>
-        <p>Dodaje ocenę do istniejącego przedmiotu.</p>
+    <div class="box grades-container">
+        <h2>Dodaj Ocenę</h2>
         <form id="formOcena">
             <input type="text" id="o_indeks" placeholder="Login Studenta" required>
             <input type="text" id="o_przedmiot" placeholder="Nazwa Przedmiotu" required>
