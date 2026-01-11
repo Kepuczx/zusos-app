@@ -19,6 +19,60 @@ mongoose.connect(MONGO_URI)
 app.use(express.static('public'));
 app.use(express.json());
 
+// ==========================================
+// SEKCJA ZARZĄDZANIA UŻYTKOWNIKAMI (ADMIN)
+// ==========================================
+
+// 1. GET: Pobierz listę wszystkich użytkowników
+app.get('/api/uzytkownicy', async (req, res) => {
+    try {
+        // Pobieramy wszystkich, ale bez pola 'haslo' (bezpieczeństwo)
+        const users = await Student.find().select('-haslo');
+        res.json(users);
+    } catch (error) {
+        console.error("Błąd pobierania użytkowników:", error);
+        res.status(500).json({ message: "Błąd serwera" });
+    }
+});
+
+// 2. DELETE: Usuń użytkownika po ID
+app.delete('/api/uzytkownicy/:id', async (req, res) => {
+    try {
+        const idDoUsuniecia = req.params.id;
+        await Student.findByIdAndDelete(idDoUsuniecia);
+        res.json({ message: "Użytkownik został usunięty" });
+    } catch (error) {
+        console.error("Błąd usuwania:", error);
+        res.status(500).json({ message: "Błąd podczas usuwania" });
+    }
+});
+
+// 3. PUT: Edytuj dane użytkownika (Imie, Nazwisko, Login, Klasa)
+app.put('/api/uzytkownicy/:id', async (req, res) => {
+    try {
+        const idDoEdycji = req.params.id;
+        // Pobieramy dane z formularza. UWAGA: używamy pola 'klasa'
+        const { imie, nazwisko, login, klasa } = req.body;
+
+        const zaktualizowanyUzytkownik = await Student.findByIdAndUpdate(
+            idDoEdycji,
+            { 
+                imie: imie, 
+                nazwisko: nazwisko, 
+                login: login, 
+                klasa: klasa 
+            },
+            { new: true } // Opcja, żeby baza zwróciła już nowy, poprawiony obiekt
+        );
+
+        res.json(zaktualizowanyUzytkownik);
+
+    } catch (error) {
+        console.error("Błąd edycji:", error);
+        res.status(500).json({ message: "Błąd edycji danych" });
+    }
+});
+
 
 //AKTUALNOSCI
 
@@ -117,6 +171,12 @@ app.put('/api/zmien-haslo', async (req,res)=>{
 
     }
 });
+
+
+
+
+
+
 
 
 //Oceny

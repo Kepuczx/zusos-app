@@ -6,7 +6,7 @@ const studentSchema = new mongoose.Schema({
     imie: {type:String},
     nazwisko: {type:String},
     zdjecieURL:{type:String, default:'images/awatar.png'},
-    klasa:{type:String, require:true}
+    klasa:{type:String, required:true}
 });
 
 module.exports = mongoose.model('Student', studentSchema);

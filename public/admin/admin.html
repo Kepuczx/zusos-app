@@ -17,6 +17,7 @@
             max-height: 50vh;
             overflow-y: scroll;
         }
+
     </style>
     <script src="../scripts/admin_auth.js"></script>
 </head>
@@ -114,6 +115,66 @@
         <p id="message"></p>
     </form>
 </div>
+
+<div class="users-management-container">
+        <div class="header-tools">
+            <h2>Zarządzanie Użytkownikami</h2>
+            <input type="text" id="userSearch" placeholder="Szukaj po nazwisku lub loginie..." onkeyup="filtrujUzytkownikow()">
+        </div>
+
+        <div class="table-wrapper">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Imię i Nazwisko</th>
+                        <th>Login (Indeks)</th>
+                        <th>Klasa / Rola</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body" style="max-height: 200px; overflow-y: scroll;">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Edytuj Użytkownika</h3>
+            
+            <input type="hidden" id="edit_id"> 
+            
+            <label>Imię</label>
+            <input type="text" id="edit_imie">
+            
+            <label>Nazwisko</label>
+            <input type="text" id="edit_nazwisko">
+            
+            <label>Login</label>
+            <input type="text" id="edit_login">
+            
+            <label>Klasa / Rola</label>
+            <select id="edit_klasa">
+                <option value="szlachta" style="font-weight: bold; color: purple;">👑 Szlachta (Admin)</option>
+                
+                <option value="nauczyciel">🎓 Nauczyciel</option>
+                
+                <optgroup label="Klasy I stopnia">
+                    <option value="IO1">IO1 (Informatyka Ogólna 1)</option>
+                    <option value="IO2">IO2 (Informatyka Ogólna 2)</option>
+                    <option value="IO3">IO3 (Informatyka Ogólna 3)</option>
+                </optgroup>
+
+            </select>
+    
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="zamknijModal()">Anuluj</button>
+                <button class="btn-save" onclick="zapiszZmiany()">Zapisz Zmiany</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-users.js"></script>
 
 <script>
 
