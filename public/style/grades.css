@@ -5,6 +5,10 @@
 
 }
 
+.grades{
+    display: none;
+}
+
 .grades-container{
     width: fit-content;
     margin: 0 auto;
@@ -46,4 +50,138 @@ box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
     background-color: rgb(255, 255, 255, 0.3);
     transition: 0.5s;
 
+}
+
+/* NIZEJ JEST CCS DO WSTAWIANIA OCEN*/
+        
+.add-grade{
+    display: none;
+}
+
+.container 
+{ 
+    max-width: 600px; 
+    margin: 0 auto;
+}
+
+h2
+{ 
+    width: fit-content;
+    font-weight: 1000px;
+    margin-bottom: 15px;
+    border-bottom: 3px solid rgb(71, 145, 255);
+}
+input 
+{ 
+    width: 95%; 
+    padding: 10px; 
+    margin: 5px 0; 
+    background: #444; 
+    border: 1px solid #555; 
+    color: white; 
+    border-radius: 5px; 
+}
+button 
+{ 
+    width: 100%; 
+    padding: 10px; 
+    background: #4CAF50; 
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    font-weight: bold; 
+    margin-top: 10px; 
+    border-radius: 5px;
+}
+button:hover 
+{ 
+    background: #45a049;
+}
+.log 
+{ 
+    margin-top: 10px; 
+    color: #aaa; 
+    font-size: 0.9em; 
+}
+
+#o_wartosc{
+    anchor-name: --ocena;
+}
+
+
+
+/* Kontener całej listy */
+#lista-ocen {
+    margin-top: 20px;
+    border-top: 1px solid #444; /* Linia oddzielająca od formularza */
+    padding-top: 10px;
+}
+
+/* Pojedynczy pasek z oceną */
+.wiersz-oceny {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    border-left: 5px solid #2196F3; /* Niebieski pasek z lewej */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Teksty wewnątrz */
+.wiersz-oceny .info {
+    font-size: 0.9em;
+    color: #333;
+}
+
+.wiersz-oceny .student { font-weight: bold; margin-right: 5px; }
+.wiersz-oceny .ocena-wartosc { 
+    font-weight: bold; 
+    color: #2196F3; 
+    font-size: 1.1em; 
+    margin: 0 5px;
+}
+.wiersz-oceny .opis { font-style: italic; color: #666; }
+
+/* Przycisk usuwania (X) */
+.btn-usun {
+    background: #ff4444;
+    color: white;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.btn-usun:hover {
+    background: #cc0000;
+}
+
+/* Styl dla guzika losuj (jeśli jeszcze nie masz) */
+.losuj {
+    position: fixed;
+    position-anchor: --ocena;
+    position-area: right;
+    translate: -150%;
+    cursor: pointer;
+    user-select: none;
+    background: #2196F3;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+.losuj:hover { background: #5cb8e3; }
+
+#lista-ocen{
+    max-height: 200px;
+    overflow-y: scroll;
 }

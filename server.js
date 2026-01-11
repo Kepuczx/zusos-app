@@ -191,7 +191,8 @@ app.put('/api/dodaj-ocene-czastkowa', async (req, res) => {
         przedmiotDb.oceny.push({
             wartosc: nowaOcena.wartosc,
             opis: nowaOcena.opis,
-            data: new Date()
+            data: new Date(),
+            wstawil: nowaOcena.wstawil || "Nieznany"
         });
 
         // 5. Zapisujemy zmiany
@@ -205,6 +206,78 @@ app.put('/api/dodaj-ocene-czastkowa', async (req, res) => {
         res.status(500).json({ message: "Błąd serwera: " + error.message });
     }
 });
+
+
+// GET: Pobierz listę wszystkich unikalnych przedmiotów w systemie
+app.get('/api/lista-przedmiotow', async (req, res) => {
+    try {
+        // "distinct" wyciąga unikalne wartości z pola "przedmiot"
+        const przedmioty = await Ocena.distinct("przedmiot");
+        res.json(przedmioty);
+    } catch (error) {
+        res.status(500).json({ message: "Błąd: " + error.message });
+    }
+});
+
+// 1. GET: Pobierz wszystkie oceny wystawione przez konkretnego nauczyciela
+app.get('/api/nauczyciel/wystawione-oceny/:nauczycielId', async (req, res) => {
+    const { nauczycielId } = req.params;
+
+    try {
+        // Szukamy dokumentów, które w tablicy 'oceny' mają wpis z danym 'wstawil'
+        const dokumenty = await Ocena.find({ "oceny.wstawil": nauczycielId });
+
+        let znalezioneOceny = [];
+
+        // Musimy "ręcznie" przefiltrować tablice, żeby wyciągnąć tylko te konkretne oceny
+        dokumenty.forEach(doc => {
+            doc.oceny.forEach(ocena => {
+                if (ocena.wstawil === nauczycielId) {
+                    znalezioneOceny.push({
+                        // Musimy wiedzieć KOGO i Z CZEGO dotyczy ocena, żeby ją potem usunąć
+                        studentIndeks: doc.indeks,
+                        przedmiot: doc.przedmiot,
+                        // Dane samej oceny
+                        ocenaId: ocena._id, // WAŻNE: To unikalne ID oceny
+                        wartosc: ocena.wartosc,
+                        opis: ocena.opis,
+                        data: ocena.data
+                    });
+                }
+            });
+        });
+
+        res.json(znalezioneOceny);
+
+    } catch (error) {
+        res.status(500).json({ message: "Błąd serwera: " + error.message });
+    }
+});
+
+// 2. DELETE: Usuń konkretną ocenę cząstkową
+app.delete('/api/oceny/usun', async (req, res) => {
+    // Potrzebujemy 3 informacji, żeby trafić w cel
+    const { studentIndeks, przedmiot, ocenaId } = req.body;
+
+    try {
+        // Używamy $pull - to komenda MongoDB "wyciągnij z tablicy element o danym ID"
+        const wynik = await Ocena.updateOne(
+            { indeks: studentIndeks, przedmiot: przedmiot },
+            { $pull: { oceny: { _id: ocenaId } } }
+        );
+
+        if (wynik.modifiedCount > 0) {
+            res.json({ message: "Ocena została usunięta." });
+        } else {
+            res.status(404).json({ message: "Nie znaleziono oceny lub już została usunięta." });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: "Błąd usuwania: " + error.message });
+    }
+});
+
+
 
 
 

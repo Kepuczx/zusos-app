@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../style/grades.css">
     <script src="../scripts/auth.js"></script>
     <script src="../scripts/admin_site_link.js"></script>
+    <script src="../scripts/teacher_auth.js" defer></script>
 
     
     <style>
@@ -67,7 +68,7 @@
         <script src="../scripts/nav-click.js"></script>
 
         <div class="main"></div>
-        <div class="grades-container">
+        <div class="grades grades-container">
             <h2 class="grades-header">MOJE OCENY</h2>
             <table class="styled-table">
                 <thead>
@@ -82,10 +83,23 @@
                 <tbody id="tabela-body">
                 </tbody>
             </table>
-</div>
-
-        
-
+        </div>
+        <div class="add-grade grades-container">
+            <h2>Dodaj Ocenę</h2>
+            <form id="formOcena">
+                <input type="text" id="o_indeks" placeholder="Indeks Studenta" required>
+                <select id="o_przedmiot" required style="width: 100%; padding: 10px; margin: 5px 0; background: #444; border: 1px solid #555; color: white; border-radius: 5px;">
+                    <option value="" disabled selected>-- Wybierz przedmiot --</option>
+                </select>
+                <hr style="border-color: #555">
+                <input type="text" id="o_wartosc" placeholder="Ocena (np. 4.5)" required>
+                <span class="losuj">Losuj</span>
+                <input type="text" id="o_opis" placeholder="Opis (np. Kolokwium 1)" required>
+                <button type="submit" style="background-color: #2196F3;">DODAJ</button>
+            </form>
+            <div id="logOcena" class="log"></div>
+            <div id="lista-ocen"></div>
+        </div>
 
         
     </main>
@@ -116,5 +130,6 @@
 
 
     <script src="../scripts/grades.js"></script>
+    <script src="../scripts/teacher.js"></script>
 </body>
 </html>

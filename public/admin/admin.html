@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel Uniwersytetu</title>
+    <link rel="icon" href="../images/uwm-logo.jpg" type="image/png">
     <style>
         body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
         .form-group { margin-bottom: 15px; border: 1px solid #ddd; padding: 15px; background: #f9f9f9; }
@@ -271,6 +272,55 @@ function wyczyscFormularz() {
 }
 
 pobierzZajecia();
+</script>
+<hr>
+
+    <div class="box grades-container">
+        <h2>Dodaj Ucznia Do Przedmiotu</h2>
+        <form id="formPrzedmiot">
+            <input type="text" id="p_indeks" placeholder="Login Studenta (np. s12345)" required>
+            <input type="text" id="p_nazwa" placeholder="Nazwa Przedmiotu (np. Matematyka)" required>
+            <input type="text" id="p_prowadzacy" placeholder="Prowadzący (np. dr Kowalski)" required>
+            <input type="text" id="p_ects" placeholder="Punkty ECTS (np. 5)" required>
+            <button type="submit">DODAJ</button>
+        </form>
+        <div id="logPrzedmiot" class="log"></div>
+    </div>
+    <script>
+    // --- OBSŁUGA DODAWANIA PRZEDMIOTU ---
+    document.getElementById('formPrzedmiot').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const log = document.getElementById('logPrzedmiot');
+        log.textContent = "Wysyłanie...";
+
+        const data = {
+            indeks: document.getElementById('p_indeks').value,
+            przedmiot: document.getElementById('p_nazwa').value,
+            prowadzacy: document.getElementById('p_prowadzacy').value,
+            ects: document.getElementById('p_ects').value,
+            oceny: [] // Na start pusta lista ocen
+        };
+
+        try {
+            const res = await fetch('/api/dodaj-przedmiot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+            
+            if(res.ok) {
+                log.style.color = "#4CAF50";
+                log.textContent = "SUKCES: " + json.message;
+            } else {
+                throw new Error(json.message);
+            }
+        } catch (err) {
+            log.style.color = "red";
+            log.textContent = "BŁĄD: " + err.message;
+        }
+    });
+
 </script>
 
 

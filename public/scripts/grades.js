@@ -26,10 +26,14 @@ async function zaladujOcenyDoTabeli() {
             let ocenyCzastkoweHTML = '-';
             
             if (przedmiot.oceny && przedmiot.oceny.length > 0) {
-                // Mapujemy każdą ocenę na <span> z tooltipem (opisem)
-                ocenyCzastkoweHTML = przedmiot.oceny.map(ocena => 
-                    `<span title="${ocena.opis}" class="ocena-badge">${ocena.wartosc}</span>`
-                ).join(' '); // Oddzielamy je spacją
+                ocenyCzastkoweHTML = przedmiot.oceny.map(ocena => {
+                // Sprawdzamy czy ocena to 2, jeśli tak dajemy czerwony, jeśli nie - czarny (lub inny)
+                const kolor = (ocena.wartosc == 2) ? 'red' : (ocena.wartosc == 2.5) ? 'yellow' : 'inherit';
+        
+                    return `<span title="${ocena.opis}\nWstawił: ${ocena.wstawil || 'Nieznany'}" class="ocena-badge" style="color: ${kolor}">
+                        ${ocena.wartosc}
+                        </span>`;
+            }).join(', ');
             }
 
             // B. Tworzymy nowy wiersz tabeli
