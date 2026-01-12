@@ -4,6 +4,7 @@ const Aktualnosci = require('./models/aktualnosci');
 const Student = require('./models/Student');
 const Ocena = require('./models/Ocena');
 const Zajecia = require('./models/zajecia');
+const Frekwencja = require('./models/Frekwencja');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -417,6 +418,208 @@ app.delete('/api/zajecia/:id', async (req, res) => {
         res.json({ message: 'Zajęcia usunięte 🗑️' });
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+});
+
+
+
+app.get('/api/zajecia/nauczyciel', async (req, res) => {
+    const { prowadzacy } = req.query;
+
+    try {
+        let zajecia;
+
+        if (prowadzacy) {
+            zajecia = await Zajecia.find({ prowadzacy });
+        } else {
+            zajecia = await Zajecia.find();
+        }
+
+        res.json(zajecia);
+    } catch (err) {
+        res.status(500).json({ error: 'Błąd pobierania zajęć' });
+    }
+});
+
+
+
+
+app.get('/api/studenci', async (req, res) => {
+    const { klasa } = req.query;
+
+    try {
+        let filter = {};
+
+        // tylko studenci z danej klasy
+        if (klasa) {
+            filter.klasa = klasa;
+        }
+
+        // ❗ wywal adminów i nauczycieli
+        filter.klasa = {
+            $nin: ['Admin', 'admin', 'Nauczyciel', 'nauczyciel'],
+            ...(klasa ? { $eq: klasa } : {})
+        };
+
+        const studenci = await Student.find(filter);
+        res.json(studenci);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Błąd pobierania studentów' });
+    }
+});
+
+
+// FREKWENCJA ITD
+
+app.get('/api/zajecia/nauczyciel', async (req, res) => {
+    const { prowadzacy } = req.query;
+
+    try {
+        let zajecia;
+
+        if (prowadzacy) {
+            zajecia = await Zajecia.find({ prowadzacy });
+        } else {
+            zajecia = await Zajecia.find();
+        }
+
+        res.json(zajecia);
+    } catch (err) {
+        res.status(500).json({ error: 'Błąd pobierania zajęć' });
+    }
+});
+
+
+
+
+app.get('/api/studenci', async (req, res) => {
+    const { klasa } = req.query;
+
+    try {
+        let filter = {};
+
+        // tylko studenci z danej klasy
+        if (klasa) {
+            filter.klasa = klasa;
+        }
+
+        // ❗ wywal adminów i nauczycieli
+        filter.klasa = {
+            $nin: ['Admin', 'admin', 'Nauczyciel', 'nauczyciel'],
+            ...(klasa ? { $eq: klasa } : {})
+        };
+
+        const studenci = await Student.find(filter);
+        res.json(studenci);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Błąd pobierania studentów' });
+    }
+});
+
+
+
+
+app.get('/api/frekwencja', async (req, res) => {
+    const { zajeciaId, data } = req.query;
+
+    if (!zajeciaId || !data) {
+        return res.status(400).json({ error: 'Brak danych' });
+    }
+
+    try {
+        const frekwencja = await Frekwencja.find({
+            zajeciaId,
+            data: new Date(data)
+        }).select('studentId status');
+
+        res.json(frekwencja); // może być pusta tablica
+    } catch (err) {
+        res.status(500).json({ error: 'Błąd pobierania frekwencji' });
+    }
+});
+
+// pobierz wszystkie frekwencje dla zajęć (nauczyciel)
+app.get('/api/frekwencja/wszystkie', async (req, res) => {
+    const { zajeciaId } = req.query;
+
+    if (!zajeciaId) {
+        return res.status(400).json({ error: 'Brak zajeciaId' });
+    }
+
+    try {
+        const frekwencja = await Frekwencja.find({ zajeciaId })
+            .populate('studentId', 'imie nazwisko klasa'); // 👈 ważne, żeby dostać dane studenta
+
+        res.json(frekwencja);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Błąd pobierania frekwencji' });
+    }
+});
+
+
+app.post('/api/frekwencja', async (req, res) => {
+    const { zajeciaId, data, frekwencja } = req.body;
+
+    if (!zajeciaId || !data || !frekwencja) {
+        return res.status(400).json({ error: 'Brak danych' });
+    }
+
+    try {
+        // 🔥 USUŃ STARĄ FREKWENCJĘ (JEŚLI JEST)
+        await Frekwencja.deleteMany({
+            zajeciaId,
+            data: new Date(data)
+        });
+
+        // 🔥 ZAPISZ NOWĄ
+        const zapisy = frekwencja.map(f => ({
+            zajeciaId,
+            studentId: f.studentId,
+            data: new Date(data),
+            status: f.status
+        }));
+
+        await Frekwencja.insertMany(zapisy);
+
+        res.json({ message: 'Frekwencja zapisana / zaktualizowana' });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Błąd zapisu frekwencji' });
+    }
+});
+
+
+// ===============================
+// FREKWENCJA – STUDENT (MOJA)
+// ===============================
+app.get('/api/frekwencja/student', async (req, res) => {
+    const { zajeciaId, login } = req.query;
+
+    if (!zajeciaId || !login) {
+        return res.status(400).json({ error: 'Brak danych' });
+    }
+
+    try {
+        const frekwencja = await Frekwencja.find({ zajeciaId })
+            .populate('studentId', 'imie nazwisko klasa login');
+
+        // tylko frekwencja zalogowanego studenta
+        const moja = frekwencja.filter(f =>
+            f.studentId && f.studentId.login === login
+        );
+
+        res.json(moja);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Błąd pobierania frekwencji studenta' });
     }
 });
 

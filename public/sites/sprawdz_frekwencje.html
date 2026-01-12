@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZUSOS - Frekwencja</title>
+    <link rel="stylesheet" href="../style/mainstyles.css">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../style/grades.css">
+    <link rel="stylesheet" href="../style/sprawdz_frekwencje.css">
+    <link rel="shortcut icon" href="../images/favicon.svg" type="image/x-icon">
+
+    <script src="../scripts/auth.js"></script>
+    <script src="../scripts/admin_site_link.js"></script>
+
+    <style>
+        nav .animation {
+            position: absolute;
+            left: 366px;
+            width: 160px;
+            height: 50px;
+            background-color: #333a41;
+            border-radius: 10px;
+            transition: all 0.3s ease 0s;
+        }
+        nav a:nth-of-type(1):hover ~ .animation { transform: translateX(-356px); }
+        nav a:nth-of-type(2):hover ~ .animation { transform: translateX(-178px); }
+        nav a:nth-of-type(4):hover ~ .animation { transform: translateX(210px) scaleX(1.5); }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="../index.html">AKTUALNOŚCI</a>
+        <a href="schedule.html">PLAN ZAJĘĆ</a>
+        <a id="oceny" href="grades.html">OCENY</a>
+        <a id="frekwencja" href="frekwencja.html">FREKWENCJA</a>
+        <div class="animation"></div>
+        <div class="hamburger">
+            <div class="stick first"></div>
+            <div class="stick second"></div>
+            <div class="stick third"></div>
+        </div>
+    </nav>
+
+    <div class="avatar"><img alt="awatar" /></div>
+
+    <main>
+        <div class="nav-links">
+            <ul>
+                <li><a href="../index.html">AKTUALNOŚCI</a></li>
+                <li><a href="schedule.html">PLAN ZAJĘĆ</a></li>
+                <li><a href="grades.html">OCENY</a></li>
+                <li><a href="frekwencja.html">FREKWENCJA</a></li>
+            </ul>
+        </div>
+
+        <div class="avatar-links">
+            <ul>
+                <li><a href="/sites/omnie.html">O MNIE</a></li>
+                <li><a href="change_password.html">ZMIEŃ HASŁO</a></li>
+                <li><a href="#" onclick="wyloguj()">WYLOGUJ SIĘ</a></li>
+            </ul>
+        </div>
+
+        <script src="../scripts/nav-click.js"></script>
+
+        
+        <div class="frekwencja-menu">
+                <h2>Sprawdź frekwencję</h2>
+                <!-- elementy select i button dodane w JS -->
+            </div>
+    
+    </main>
+
+    <div class="carousel">
+        <div class="group">
+            <div class="card"><a href="https://x.com/uwm_olsztyn"><img src="../images/x-logo-removebg-preview.png" alt="x-logo"></a></div>
+            <div class="card"><a href="https://www.facebook.com/UWM.Olsztyn/?locale=pl_PL"><img src="../images/facebook-logo-removebg-preview.png" alt="facebook-logo"></a></div>
+            <div class="card"><a href="https://uwm.edu.pl/"><img src="../images/uwm-logo.jpg" alt="uwm-logo"></a></div>
+            <div class="card"><a href="https://moodle.uwm.edu.pl/"><img src="../images/images-removebg-preview.png" alt="moodle-logo"></a></div>
+        </div>
+    </div>
+
+    <footer>
+        <address>
+            Kontakt: zusos@gmail.com <br> +48 012 345 678
+        </address>
+        <span>Wszelkie prawa zastrzeżone © 2025</span>
+    </footer>
+
+    <script src="../scripts/sprawdz_frekwencje.js"></script>
+</body>
+</html>

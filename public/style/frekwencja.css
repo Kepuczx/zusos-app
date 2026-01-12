@@ -1,0 +1,112 @@
+/* ===============================
+   GŁÓWNA SEKCJA FREKWENCJI
+   =============================== */
+.frekwencja-menu {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #1f252b;
+    padding: 25px;
+    border-radius: 12px;
+    color: #fff;
+    -webkit-box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 0.5);
+    -moz-box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 0.5);
+    box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 0.5);
+    text-align: center;
+}
+
+.frekwencja-menu h2 {
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    color: #49a1ff;
+}
+
+/* ===============================
+   PRZYCISKI
+   =============================== */
+.frekwencja-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.frekwencja-btn {
+    background: #2e3440;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.frekwencja-btn:hover {
+    background: #3a82f7;
+    transform: scale(1.05);
+    box-shadow: 0 0 12px #3a82f7;
+}
+
+/* ===============================
+   TABELA / DODAWANIE WYBORU
+   =============================== */
+.frekwencja-select {
+    margin: 15px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #2e3440;
+    color: #fff;
+    font-size: 0.95rem;
+    min-width: 200px;
+}
+
+.frekwencja-select:focus {
+    outline: none;
+    border-color: #49a1ff;
+}
+
+/* ===============================
+   WYNIK / TABELA
+   =============================== */
+.frekwencja-wynik {
+    margin-top: 30px;
+    overflow-x: auto;
+}
+
+.frekwencja-wynik table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.frekwencja-wynik th, 
+.frekwencja-wynik td {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.frekwencja-wynik th {
+    background: #2e3440;
+    color: #49a1ff;
+    font-weight: 600;
+}
+
+.frekwencja-wynik tr:hover {
+    background: #3a3f48;
+    transform: scale(1.01);
+}
+
+/* ===============================
+   MOBILE RESPONSIVE
+   =============================== */
+@media (max-width: 600px) {
+    .frekwencja-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+}

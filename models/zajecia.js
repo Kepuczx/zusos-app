@@ -27,9 +27,11 @@ const ZajeciaSchema = new mongoose.Schema({
     grupaZaj:{
         type: String,
         required: true
+    },
+    procentZaliczenia: {
+        type: Number,
+        default: 0 // wartość domyślna, żeby stare zajęcia nie miały problemu
     }
-}
-)
+});
 
 module.exports = mongoose.model('Zajecia', ZajeciaSchema);
-
