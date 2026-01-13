@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
+
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const Aktualnosci = require('./models/aktualnosci');
@@ -17,6 +18,14 @@ const PORT = process.env.PORT || 3000;
 require('dotenv').config();
 const MONGO_URI = process.env.MONGO_URI;
 
+console.log("--- TEST ZMIENNYCH ---");
+console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
+console.log("API Key:", process.env.CLOUDINARY_API_KEY);
+console.log("Czy Secret istnieje?", process.env.CLOUDINARY_API_SECRET ? "TAK" : "NIE");
+console.log("----------------------");
+
+
+
 mongoose.connect(MONGO_URI)
     .then(()=> console.log('Polaczono z MongoDB!'))
     .catch(err => console.error('Błąd polaczenia z baza: ', err));
@@ -24,6 +33,7 @@ mongoose.connect(MONGO_URI)
 
 app.use(express.static('public'));
 app.use(express.json());
+
 
 // ==========================================
 // 1. KONFIGURACJA CLOUDINARY
@@ -38,14 +48,16 @@ cloudinary.config({
 // 2. KONFIGURACJA MULTERA (Żeby wysyłał od razu do chmury)
 // ==========================================
 const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
+    cloudinary: cloudinary, // Tu przekazujemy skonfigurowaną instancję cloudinary
     params: {
-        folder: 'szkola_aktualnosci', // Nazwa folderu w chmurze
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'], // Dozwolone formaty
+        folder: 'szkola_aktualnosci',       // Nazwa folderu, który sam się utworzy w chmurze
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'], // Jakie pliki akceptujemy
+
     },
 });
 
 const upload = multer({ storage: storage });
+
 
 //AKTUALNOSCI
 
