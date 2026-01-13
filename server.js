@@ -53,7 +53,7 @@ app.put('/api/uzytkownicy/:id', async (req, res) => {
     try {
         const idDoEdycji = req.params.id;
         // Pobieramy dane z formularza. UWAGA: używamy pola 'klasa'
-        const { imie, nazwisko, login, klasa } = req.body;
+        const { imie, nazwisko, login, klasa ,status} = req.body;
 
         const zaktualizowanyUzytkownik = await Student.findByIdAndUpdate(
             idDoEdycji,
@@ -61,7 +61,8 @@ app.put('/api/uzytkownicy/:id', async (req, res) => {
                 imie: imie, 
                 nazwisko: nazwisko, 
                 login: login, 
-                klasa: klasa 
+                klasa: klasa,
+                status: status
             },
             { new: true } // Opcja, żeby baza zwróciła już nowy, poprawiony obiekt
         );

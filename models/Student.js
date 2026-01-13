@@ -6,7 +6,11 @@ const studentSchema = new mongoose.Schema({
     imie: {type:String},
     nazwisko: {type:String},
     zdjecieURL:{type:String, default:'images/awatar.png'},
-    klasa:{type:String, required:true}
+    klasa:{type:String, required:true},
+    status:{ type:String ,
+        default: 'aktywny',
+        enum: ['aktywny', 'skreślony', 'absolwent', 'urlop']
+    }
 });
 
 module.exports = mongoose.model('Student', studentSchema);

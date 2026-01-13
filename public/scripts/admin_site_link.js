@@ -1,5 +1,5 @@
 function addAdminLink(){
-    const afterHim = document.getElementById('oceny');
+    const afterHim = document.getElementById('frekwencja');
     const liOceny = document.getElementById('liOceny');
 
     const adminLink = document.createElement('a');
@@ -15,12 +15,12 @@ function addAdminLink(){
     console.log('DODANO PANEL ADMINISTRATORA');
 }
 
-const adminLogin = localStorage.getItem('userLogin');
+const adminLogin = localStorage.getItem('userklasa');
 
 
 
 document.addEventListener('DOMContentLoaded', ()=>{
-    if(adminLogin === 'admin'){
+    if(adminLogin === 'admin' || adminLogin === 'szlachta'){
         addAdminLink();
     }
 })

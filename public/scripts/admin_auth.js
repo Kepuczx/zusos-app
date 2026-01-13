@@ -3,10 +3,11 @@ function sprawdzAdmina(){
         return;
     }
     const czyZalogowany = localStorage.getItem('zalogowany');
-    const admin = localStorage.getItem('userLogin');
+    const admin = localStorage.getItem('userklasa');
 
-    if(!czyZalogowany && admin !== 'admin'){
-        window.location.href = '/sites/login.html';
+    if(!czyZalogowany || admin !== 'szlachta' && admin !== 'admin'){
+        alert("Wstęp wzbroniony! To strefa tylko dla Szlachty. 👑");
+        window.location.href = '../index.html';
     }
 }
 

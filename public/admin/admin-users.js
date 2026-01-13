@@ -26,8 +26,7 @@ function renderTable(users) {
     users.forEach(user => {
         const tr = document.createElement('tr');
         
-        // --- LOGIKA KOLORÓW ---
-        // Sprawdzamy pole 'klasa'
+        // --- A. LOGIKA KOLORÓW KLAS ---
         let badgeClass = '';
         const klasaUsera = (user.klasa || '').toLowerCase(); 
 
@@ -36,11 +35,20 @@ function renderTable(users) {
         } else if (klasaUsera === 'nauczyciel') {
             badgeClass = 'role-nauczyciel';
         } else {
-            // Wszystkie inne to studenci
             badgeClass = 'role-student-class';
         }
 
-        // Tworzymy HTML wiersza
+        // --- B. LOGIKA IKON STATUSU (NOWE!) ---
+        let statusIcon = '';
+        // Pobieramy status lub domyślnie 'aktywny'
+        const st = (user.status || 'aktywny').toLowerCase();
+        
+        if(st === 'aktywny') statusIcon = '🟢';       // Zielona kropka
+        else if(st === 'skreślony') statusIcon = '🔴'; // Czerwona kropka
+        else if(st === 'urlop') statusIcon = '🟡';     // Żółta kropka
+        else if(st === 'absolwent') statusIcon = '🎓'; // Czapka absolwenta
+
+        // --- C. TWORZENIE HTML WIERSZA ---
         tr.innerHTML = `
             <td><strong>${user.imie} ${user.nazwisko}</strong></td>
             <td>${user.login}</td>
@@ -48,6 +56,9 @@ function renderTable(users) {
                 <span class="role-badge ${badgeClass}">
                     ${user.klasa || 'Brak'}
                 </span>
+            </td>
+            <td style="font-weight:bold; text-transform: capitalize;">
+                ${statusIcon} ${user.status || 'aktywny'}
             </td>
             <td>
                 <button class="action-btn btn-edit" onclick="otworzEdycje('${user._id}')">Edytuj</button>
@@ -64,14 +75,17 @@ function otworzEdycje(id) {
     const user = allUsers.find(u => u._id === id);
     if (!user) return;
 
-    // Wypełniamy pola w okienku
+    // Wypełniamy pola tekstowe
     document.getElementById('edit_id').value = user._id;
     document.getElementById('edit_imie').value = user.imie;
     document.getElementById('edit_nazwisko').value = user.nazwisko;
     document.getElementById('edit_login').value = user.login;
     
-    // Ustawiamy selecta na odpowiednią klasę
+    // Ustawiamy selecty (Klasa i Status)
     document.getElementById('edit_klasa').value = user.klasa; 
+    
+    // Ustawiamy status (domyślnie aktywny, jeśli brak w bazie)
+    document.getElementById('edit_status').value = user.status || 'aktywny';
 
     // Pokazujemy okno
     document.getElementById('editModal').classList.add('active');
@@ -91,7 +105,9 @@ async function zapiszZmiany() {
         imie: document.getElementById('edit_imie').value,
         nazwisko: document.getElementById('edit_nazwisko').value,
         login: document.getElementById('edit_login').value,
-        klasa: document.getElementById('edit_klasa').value 
+        klasa: document.getElementById('edit_klasa').value,
+        // Dodajemy STATUS do wysyłanych danych
+        status: document.getElementById('edit_status').value 
     };
 
     try {
@@ -115,7 +131,7 @@ async function zapiszZmiany() {
 
 // 7. Funkcja usuwająca użytkownika
 async function usunUzytkownika(id) {
-    if (!confirm("Czy na pewno chcesz usunąć tego użytkownika?")) return;
+    if (!confirm("Czy na pewno chcesz trwale usunąć tego użytkownika?")) return;
 
     try {
         const response = await fetch(`/api/uzytkownicy/${id}`, {
@@ -134,30 +150,23 @@ async function usunUzytkownika(id) {
 
 // 8. Wyszukiwarka
 function filtrujUzytkownikow() {
-    // 1. Pobieramy tekst z inputa i zamieniamy na małe litery
     const input = document.getElementById('userSearch');
-    if (!input) return; // Zabezpieczenie, gdyby input nie istniał
+    if (!input) return; 
     
     const szukanyTekst = input.value.toLowerCase();
     
-    // 2. Filtrujemy listę allUsers
     const przefiltrowani = allUsers.filter(user => {
-        // Zabezpieczenie: Jeśli pole nie istnieje, użyj pustego tekstu ''
-        // String(...) zamienia liczby (np. login) na tekst
         const imie = (user.imie || '').toLowerCase();
         const nazwisko = (user.nazwisko || '').toLowerCase();
         const login = String(user.login || '').toLowerCase();
         
-        // Łączymy imię i nazwisko, żeby szukać po "Jan Kowalski"
         const pelneImie = imie + ' ' + nazwisko;
 
-        // Sprawdzamy czy tekst pasuje do: imienia, nazwiska, loginu LUB całego imienia i nazwiska
         return imie.includes(szukanyTekst) || 
                nazwisko.includes(szukanyTekst) || 
                login.includes(szukanyTekst) ||
                pelneImie.includes(szukanyTekst);
     });
     
-    // 3. Rysujemy nową tabelę z wynikami
     renderTable(przefiltrowani);
 }

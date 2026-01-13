@@ -110,7 +110,6 @@
 
         <label for="zdjecieURL">URL Zdjęcia (Opcjonalny, Domyślny: awatar.png):</label>
         <input type="text" id="zdjecieURL" name="zdjecieURL" placeholder="np. /images/jan-kowalski.png">
-        
         <button type="submit" onclick="addUser()">Dodaj Studenta</button>
         <p id="message"></p>
     </form>
@@ -165,6 +164,13 @@
                     <option value="IO3">IO3 (Informatyka Ogólna 3)</option>
                 </optgroup>
 
+            </select>
+            <label>Status Studenta</label>
+            <select id="edit_status" style="width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px;">
+                <option value="aktywny">🟢 Aktywny</option>
+                    <option value="urlop">🟡 Urlop Dziekański</option>
+                    <option value="absolwent">🎓 Absolwent</option>
+                    <option value="skreślony">🔴 Skreślony</option>
             </select>
     
             <div class="modal-actions">
