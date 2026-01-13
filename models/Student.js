@@ -5,7 +5,7 @@ const studentSchema = new mongoose.Schema({
     haslo: {type:String, required:true},
     imie: {type:String},
     nazwisko: {type:String},
-    zdjecieURL:{type:String, default:'images/awatar.png'},
+    zdjecieURL:{type:String, default:'/images/awatar.png'},
     klasa:{type:String, required:true},
     status:{ type:String ,
         default: 'aktywny',

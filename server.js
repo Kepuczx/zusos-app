@@ -1,5 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
 const Aktualnosci = require('./models/aktualnosci');
 const Student = require('./models/Student');
 const Ocena = require('./models/Ocena');
@@ -19,6 +24,111 @@ mongoose.connect(MONGO_URI)
 
 app.use(express.static('public'));
 app.use(express.json());
+
+// ==========================================
+// KONFIGURACJA MULTERA
+// ==========================================
+
+// 1. Sprawdzamy czy folder public/uploads istnieje, jak nie to go tworzymy
+const uploadDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// 2. Konfiguracja gdzie zapisać plik i jak go nazwać
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/'); // Folder docelowy
+    },
+    filename: function (req, file, cb) {
+        // Unikalna nazwa pliku (czas + losowa liczba + rozszerzenie)
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
+// ==========================================
+
+
+//AKTUALNOSCI
+
+app.get('/api/aktualnosci', async(req,res)=>{
+    try{
+        const aktualnosci = await Aktualnosci.find().sort({data:-1}).limit(5);
+        res.json(aktualnosci);
+
+    }catch(error){
+        res.status(500).json({ message: error.message});
+    }
+});
+
+// --- ZMODYFIKOWANY POST (PODMIEŃ STARY NA TEN) ---
+// Dodaliśmy middleware: upload.single('zdjecie')
+app.post('/api/aktualnosci', upload.single('zdjecie'), async(req,res)=>{
+    try{
+        // Sprawdzamy czy przesłano plik. 
+        // Jeśli tak -> tworzymy ścieżkę '/uploads/nazwa.jpg'
+        // Jeśli nie -> używamy placeholder
+        const sciezkaDoZdjecia = req.file ? `/uploads/${req.file.filename}` : 'https://via.placeholder.com/150';
+
+        const newAktualnosci = new Aktualnosci({
+            naglowek: req.body.naglowek,
+            tresc: req.body.tresc,
+            zdjecieUrl: sciezkaDoZdjecia // Zapisujemy wygenerowaną ścieżkę
+        });
+
+        const zapisanyAktualnosci = await newAktualnosci.save();
+        res.status(201).json(zapisanyAktualnosci);
+    }catch(error){
+        console.error(error); // Warto widzieć błąd w konsoli
+        res.status(400).json({message:error.message});
+    }
+});
+
+// DELETE: Usuń aktualność i plik z dysku
+app.delete('/api/aktualnosci/:id', async (req, res) => {
+    try {
+        // 1. Najpierw pobieramy artykuł z bazy, żeby wiedzieć jakie ma zdjęcie
+        const artykul = await Aktualnosci.findById(req.params.id);
+
+        if (!artykul) {
+            return res.status(404).json({ message: "Nie znaleziono artykułu" });
+        }
+
+        // 2. Sprawdzamy, czy artykuł ma zdjęcie i czy jest to plik lokalny (z folderu /uploads/)
+        // (Zabezpieczenie, żeby nie próbował usuwać linków z internetu np. placeholdera)
+        if (artykul.zdjecieUrl && artykul.zdjecieUrl.startsWith('/uploads/')) {
+            
+            // Tworzymy pełną ścieżkę do pliku na dysku serwera
+            // __dirname to folder, w którym jest server.js, potem wchodzimy w public i doklejamy resztę
+            const sciezkaDoPliku = path.join(__dirname, 'public', artykul.zdjecieUrl);
+
+            // 3. Usuwamy fizycznie plik
+            fs.unlink(sciezkaDoPliku, (err) => {
+                if (err) {
+                    // Jeśli pliku nie ma (np. ktoś go usunął ręcznie), logujemy błąd, ale nie przerywamy usuwania z bazy
+                    console.error("Błąd podczas usuwania pliku z dysku (może już nie istnieje):", err.message);
+                } else {
+                    console.log("🗑️ Usunięto plik z serwera:", sciezkaDoPliku);
+                }
+            });
+        }
+
+        // 4. Na koniec usuwamy wpis z bazy danych
+        await Aktualnosci.findByIdAndDelete(req.params.id);
+
+        res.json({ message: "Artykuł oraz zdjęcie zostały usunięte" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Błąd usuwania" });
+    }
+});
+
+
+
+
 
 // ==========================================
 // SEKCJA ZARZĄDZANIA UŻYTKOWNIKAMI (ADMIN)
@@ -76,32 +186,7 @@ app.put('/api/uzytkownicy/:id', async (req, res) => {
 });
 
 
-//AKTUALNOSCI
 
-app.get('/api/aktualnosci', async(req,res)=>{
-    try{
-        const aktualnosci = await Aktualnosci.find().sort({data:-1}).limit(5);
-        res.json(aktualnosci);
-
-    }catch(error){
-        res.status(500).json({ message: error.message});
-    }
-});
-
-app.post('/api/aktualnosci', async(req,res)=>{
-    try{
-        const newAktualnosci = new Aktualnosci({
-            naglowek: req.body.naglowek,
-            tresc: req.body.tresc,
-            zdjecieUrl:req.body.zdjecieUrl
-        });
-        const zapisanyAktualnosci = await newAktualnosci.save();
-        res.status(201).json(zapisanyAktualnosci);
-    }catch(error){
-        res.status(400).json({message:error.message});
-
-    }
-});
 
 
 //STUDENT

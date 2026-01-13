@@ -23,69 +23,94 @@
 </head>
 <body>
 
-    <h1>Zarządzanie Aktualnościami</h1>
+<h1>Zarządzanie Aktualnościami</h1>
 
-    <div class="form-group">
-        <h3>Dodaj nowy wpis</h3>
-        <input type="text" id="naglowek" placeholder="Tytuł artykułu">
-        <input type="text" id="zdjecie" placeholder="Link do zdjęcia (URL)">
-        <textarea id="tresc" rows="4" placeholder="Treść artykułu..."></textarea>
-        <button onclick="dodajArtykul()">Opublikuj</button>
-    </div>
+<div class="form-group">
+    <h3>Dodaj nowy wpis</h3>
+    <input type="text" id="naglowek" placeholder="Tytuł artykułu">
+    <input type="file" id="zdjecieInput" accept="image/*">
+    <textarea id="tresc" rows="4" placeholder="Treść artykułu..."></textarea>
+    <button onclick="dodajArtykul()">Opublikuj</button>
+</div>
 
-    <div id="lista-artykulow">
-        </div>
+<div id="lista-artykulow"></div>
 
-    <script>
-    // 1. Funkcja do wyświetlania listy (żebyś widział co dodałeś)
+<script>
+    // 1. WYŚWIETLANIE (Tylko przycisk USUŃ)
     async function pobierzArtykuly() {
-        const response = await fetch('/api/aktualnosci');
-        const data = await response.json();
-        
-        const lista = document.getElementById('lista-artykulow');
-        lista.innerHTML = ''; 
+        try {
+            const response = await fetch('/api/aktualnosci');
+            const data = await response.json();
+            
+            const lista = document.getElementById('lista-artykulow');
+            lista.innerHTML = ''; 
 
-        data.forEach(art => {
-            const div = document.createElement('div');
-            div.className = 'artykul';
-            // Tutaj wyświetlamy miniaturkę w panelu admina
-            div.innerHTML = `
-                <div style="flex: 1">
-                    <strong>${art.naglowek}</strong>
-                    <p>${art.tresc.substring(0, 50)}...</p>
-                    <img src="${art.zdjecieUrl}">
-                </div>
-            `;
-            lista.appendChild(div);
-        });
-    }
+            if(data.length === 0) {
+                lista.innerHTML = '<p>Brak artykułów.</p>';
+                return;
+            }
 
-    // 2. Funkcja do dodawania (POST)
-    async function dodajArtykul() {
-        const naglowek = document.getElementById('naglowek').value;
-        const tresc = document.getElementById('tresc').value;
-        // Tutaj też poprawka na zdjecieUrl
-        const zdjecieUrl = document.getElementById('zdjecie').value || undefined;
-
-        const response = await fetch('/api/aktualnosci', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ naglowek, tresc, zdjecieUrl })
-        });
-
-        if (response.ok) {
-            alert('Dodano artykuł!');
-            pobierzArtykuly(); // Odświeżamy listę
-            // Czyścimy pola
-            document.getElementById('naglowek').value = '';
-            document.getElementById('tresc').value = '';
-            document.getElementById('zdjecie').value = '';
-        } else {
-            alert('Błąd! Sprawdź konsolę.');
+            data.forEach(art => {
+                const div = document.createElement('div');
+                div.className = 'artykul';
+                div.style = "border-bottom: 1px solid #ccc; padding: 15px; display: flex; justify-content: space-between; align-items: start;";
+                
+                div.innerHTML = `
+                    <div style="flex: 1; padding-right: 20px;">
+                        <h3 style="margin: 0 0 10px 0;">${art.naglowek}</h3>
+                        <p style="margin: 0 0 10px 0;">${art.tresc}</p>
+                        ${art.zdjecieUrl ? `<img src="${art.zdjecieUrl}" style="max-width: 150px; border-radius: 5px;">` : ''}
+                    </div>
+                    <div>
+                        <button onclick="window.usunArtykul('${art._id}')" style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">Usuń</button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        } catch (e) {
+            console.error(e);
         }
     }
 
-    // Na start ładujemy listę
+    // 2. DODAWANIE
+    async function dodajArtykul() {
+        const naglowek = document.getElementById('naglowek').value;
+        const tresc = document.getElementById('tresc').value;
+        const plikInput = document.getElementById('zdjecieInput');
+
+        const formData = new FormData();
+        formData.append('naglowek', naglowek);
+        formData.append('tresc', tresc);
+        if (plikInput.files.length > 0) {
+            formData.append('zdjecie', plikInput.files[0]);
+        }
+
+        const response = await fetch('/api/aktualnosci', { method: 'POST', body: formData });
+
+        if (response.ok) {
+            alert('Dodano artykuł!');
+            document.getElementById('naglowek').value = '';
+            document.getElementById('tresc').value = '';
+            document.getElementById('zdjecieInput').value = '';
+            pobierzArtykuly();
+        } else {
+            alert('Błąd dodawania.');
+        }
+    }
+
+    // 3. USUWANIE
+    window.usunArtykul = async function(id) {
+        if(!confirm("Usunąć ten wpis?")) return;
+        
+        const res = await fetch(`/api/aktualnosci/${id}`, { method: 'DELETE' });
+        if(res.ok){
+            pobierzArtykuly();
+        } else {
+            alert("Błąd usuwania");
+        }
+    }
+
+    // Start
     pobierzArtykuly();
 </script>
 <hr>
