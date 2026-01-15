@@ -18,11 +18,6 @@ const PORT = process.env.PORT || 3000;
 require('dotenv').config();
 const MONGO_URI = process.env.MONGO_URI;
 
-console.log("--- TEST ZMIENNYCH ---");
-console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
-console.log("API Key:", process.env.CLOUDINARY_API_KEY);
-console.log("Czy Secret istnieje?", process.env.CLOUDINARY_API_SECRET ? "TAK" : "NIE");
-console.log("----------------------");
 
 
 
