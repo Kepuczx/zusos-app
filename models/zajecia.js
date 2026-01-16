@@ -31,6 +31,10 @@ const ZajeciaSchema = new mongoose.Schema({
     procentZaliczenia: {
         type: Number,
         default: 0 // wartość domyślna, żeby stare zajęcia nie miały problemu
+    },
+    typ:{
+        type: String,
+        default: "Wykład"
     }
 });
 

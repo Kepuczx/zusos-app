@@ -8,32 +8,9 @@
     <link rel="shortcut icon" href="../images/favicon.svg" type="image/x-icon">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../style/schedule.css">
+
     <script src="../scripts/auth.js"></script>
     <script src="../scripts/admin_site_link.js"></script>
-    <style>
-        nav .animation{
-        position: absolute;
-        left: 188px;
-        width: 160px;
-        height: 50px;
-        background-color: #333a41;
-        border-radius: 10px;
-        transition: all 0.3s ease 0s;
-    }
-        nav a:nth-of-type(1):hover~.animation{
-        transform: translateX(-178px);
-    }
-        nav a:nth-of-type(3):hover~.animation{
-        transform: translateX(178px);
-    }
-    nav a:nth-of-type(4):hover~.animation{
-        transform: translateX(358px) scaleX(1);
-    }
-    nav a:nth-of-type(5):hover ~ .animation{
-        transform: translateX(563px) scaleX(150%);
-    }
-
-    </style>
 </head>
 <body>
     <nav>
@@ -59,120 +36,55 @@
         </ul>
       </div>
 
-        <div class="avatar-links">
-            <ul>
-                <li><a href="/sites/omnie.html">O MNIE</a></li>
-                <li><a href="change_password.html">ZMIEŃ HASŁO</a></li>
-                <li><a href="#" onclick="wyloguj()">WYLOGUJ SIĘ</a></li>
-            </ul>
+      <div class="avatar-links">
+        <ul>
+            <li><a href="/sites/omnie.html">O MNIE</a></li>
+            <li><a href="change_password.html">ZMIEŃ HASŁO</a></li>
+            <li><a href="#" onclick="wyloguj()">WYLOGUJ SIĘ</a></li>
+        </ul>
+      </div>
+
+      <div class="schedule-container" id="schedule">
+        <div class="schedule-header">
+            <div></div>
+            <div>PON</div>
+            <div>WT</div>
+            <div>ŚR</div>
+            <div>CZW</div>
+            <div>PT</div>
         </div>
-        <script src="../scripts/nav-click.js"></script>
-
-        
-            <div class="schedule-container" id="schedule">
-    <div class="schedule-header">
-        <div></div>
-        <div>PON</div>
-        <div>WT</div>
-        <div>ŚR</div>
-        <div>CZW</div>
-        <div>PT</div>
-    </div>
-</div>
-
-<script>
-const dni = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
-const godziny = ['08:00', '09:30', '11:00', '12:30', '14:00', '15:30'];
-
-async function pobierzPlan() {
-
-    const klasa = localStorage.getItem('userklasa');
-    const nazwisko = localStorage.getItem('userNazwisko');
-
-
-    if (!klasa) {
-        console.error('Brak klasy w localStorage');
-        return;
-    }
-
-    let url = `/api/plan?klasa=${encodeURIComponent(klasa)}`;
-
-    if (klasa === 'Nauczyciel' || klasa === 'szlachta') {
-        url += `&nazwisko=${encodeURIComponent(nazwisko)}`;
-    }
-
-    const res = await fetch(url);
-    const zajecia = await res.json();
-
-    console.log('PLAN:', zajecia); // 👈 debug
-
-    const container = document.getElementById('schedule');
-
-    // czyścimy stare wiersze
-    container.querySelectorAll('.schedule-row').forEach(e => e.remove());
-
-    const mapa = {};
-    zajecia.forEach(z => {
-        if (!mapa[z.dzien]) mapa[z.dzien] = {};
-        mapa[z.dzien][z.godzinaOd] = z;
-    });
-
-    godziny.forEach(godzina => {
-        const row = document.createElement('div');
-        row.className = 'schedule-row';
-
-        row.innerHTML = `<div class="hour">${godzina}</div>`;
-
-        dni.forEach(dzien => {
-            const cell = document.createElement('div');
-            const z = mapa[dzien]?.[godzina];
-
-            if (z) {
-                cell.className = 'lesson';
-                cell.innerHTML = `
-                    <strong>${z.nazwa}</strong><br>
-                    <span>${z.sala || ''}</span><br>
-                    <small>${z.prowadzacy}</small>
-                `;
-            }
-
-            row.appendChild(cell);
-        });
-
-        container.appendChild(row);
-    });
-}
-
-pobierzPlan();
-</script>
-
-        
-        
+      </div>
     </main>
+
     <div class="carousel">
       <div class="group">
-        <div class="card"><a href="https://x.com/uwm_olsztyn"><img src="../images/x-logo-removebg-preview.png" alt="x-logo"></a></div>
-        <div class="card"><a href="https://www.facebook.com/UWM.Olsztyn/?locale=pl_PL"><img src="../images/facebook-logo-removebg-preview.png" alt="x-logo"></a></div>
-        <div class="card"><a href="https://uwm.edu.pl/"><img src="../images/uwm-logo.jpg" alt="x-logo"></a></div>
-        <div class="card"><a href="https://moodle.uwm.edu.pl/"><img src="../images/images-removebg-preview.png" alt="x-logo"></a></div>
-        <div class="card"><a href="https://www.youtube.com/@zmijewskitomasz"><img src="../images/youtube-removebg-preview.png" alt="youtube-logo"></a></div>
+        <div class="card"><a href="https://x.com/uwm_olsztyn"><img src="images/x-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://www.facebook.com/UWM.Olsztyn/?locale=pl_PL"><img src="images/facebook-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://uwm.edu.pl/"><img src="images/uwm-logo.jpg" alt="x-logo"></a></div>
+        <div class="card"><a href="https://moodle.uwm.edu.pl/"><img src="images/images-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://www.youtube.com/@zmijewskitomasz"><img src="images/youtube-removebg-preview.png" alt="youtube-logo"></a></div>
       </div>
-      <div class="group">
-        <div class="card"><a href="https://x.com/uwm_olsztyn"><img src="../images/x-logo-removebg-preview.png" alt="x-logo"></a></div>
-        <div class="card"><a href="https://www.facebook.com/UWM.Olsztyn/?locale=pl_PL"><img src="../images/facebook-logo-removebg-preview.png" alt="x-logo"></a></div>
-        <div class="card"><a href="https://uwm.edu.pl/"><img src="../images/uwm-logo.jpg" alt="x-logo"></a></div>
-        <div class="card"><a href="https://moodle.uwm.edu.pl/"><img src="../images/images-removebg-preview.png" alt="x-logo"></a></div>
-        <div class="card"><a href="https://www.youtube.com/@zmijewskitomasz"><img src="../images/youtube-removebg-preview.png" alt="youtube-logo"></a></div>
+      <div  aria-hidden class="group">
+        <div class="card"><a href="https://x.com/uwm_olsztyn"><img src="images/x-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://www.facebook.com/UWM.Olsztyn/?locale=pl_PL"><img src="images/facebook-logo-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://uwm.edu.pl/"><img src="images/uwm-logo.jpg" alt="x-logo"></a></div>
+        <div class="card"><a href="https://moodle.uwm.edu.pl/"><img src="images/images-removebg-preview.png" alt="x-logo"></a></div>
+        <div class="card"><a href="https://www.youtube.com/@zmijewskitomasz"><img src="images/youtube-removebg-preview.png" alt="youtube-logo"></a></div>
       </div>
     </div>
+
     <footer>
         <address>
            <p>Kontakt: zusos@gmail.com <br> 
             +48 012 345 678</p>
         </address>
         <span>Wszelkie prawa zastrzeżone © 2025</span>
-        
-        
     </footer>
+
+    <!-- Skrypty -->
+    <script src="../scripts/auth.js"></script>
+    <script src="../scripts/admin_site_link.js"></script>
+    <script src="../scripts/nav-click.js"></script>
+    <script src="../scripts/schedule.js"></script>
 </body>
 </html>

@@ -54,6 +54,8 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 
+
+
 //AKTUALNOSCI
 
 app.get('/api/aktualnosci', async(req,res)=>{
@@ -169,7 +171,6 @@ app.put('/api/uzytkownicy/:id', async (req, res) => {
         res.status(500).json({ message: "Błąd edycji danych" });
     }
 });
-
 
 
 
