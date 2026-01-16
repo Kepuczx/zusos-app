@@ -10,6 +10,10 @@ const studentSchema = new mongoose.Schema({
     status:{ type:String ,
         default: 'aktywny',
         enum: ['aktywny', 'skreślony', 'absolwent', 'urlop']
+    },
+    stopien:{
+        type:String,
+        default:''
     }
 });
 
