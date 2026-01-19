@@ -245,173 +245,178 @@ app.put('/api/zmien-haslo', async (req,res)=>{
     }
 });
 
+// ==========================================
+// 🔥 OCENY (ZAKTUALIZOWANA SEKCJA) 🔥
+// ==========================================
 
-
-
-
-
-
-
-//Oceny
-
-// GET – wszystkie przedmioty z ocenami
-app.get('/api/oceny/:indeks', async (req, res) => {
-    try{
-        const indeksStudenta = req.params.indeks;
-
-        const oceny = await Ocena.find({ indeks: indeksStudenta});
-
-        res.json(oceny);
-    }
-    catch(error)
-    {
-        res.status(500).json({message: "Błąd pobierania ocen: " + error.message});
-
-    }
-});
-
-// POST – dodaj nowy przedmiot
-app.post('/api/dodaj-przedmiot', async (req, res) => {
-    console.log("1. Przyszło zapytanie POST /api/dodaj-przedmiot");
-    console.log("2. Otrzymane dane (req.body):", req.body);
+// 1. GET: DZIENNIK NAUCZYCIELA (Pobiera uczniów + oceny dla konkretnych zajęć)
+app.get('/api/dziennik/zajecia/:zajeciaId', async (req, res) => {
+    const { zajeciaId } = req.params;
 
     try {
-        const nowaOcena = new Ocena({
-            indeks: req.body.indeks,
-            przedmiot: req.body.przedmiot,
-            prowadzacy: req.body.prowadzacy, // Upewnij się, że nazwa pola pasuje do modelu!
-            ects: req.body.ects,
-            oceny: req.body.oceny || [], 
-            ocenaKoncowa: req.body.ocenaKoncowa
+        // Pobieramy dane o zajęciach (Typ i Grupa są najważniejsze)
+        const lekcja = await Zajecia.findById(zajeciaId);
+        if (!lekcja) return res.status(404).json({ message: "Nie znaleziono zajęć" });
+
+        // Pobieramy uczniów z tej klasy
+        const studenci = await Student.find({ klasa: lekcja.grupaZaj }).sort({ nazwisko: 1 });
+
+        // Pobieramy oceny TYLKO z tego przedmiotu i TYLKO tego typu (np. Lab)
+        const indeksyStudentow = studenci.map(s => s.login);
+        const ocenyDb = await Ocena.find({ 
+            przedmiot: lekcja.nazwa, 
+            typ: lekcja.typ,        // Filtrujemy po typie!
+            indeks: { $in: indeksyStudentow }
         });
 
-        console.log("3. Próba zapisu do bazy...");
-        await nowaOcena.save();
-        
-        console.log("4. SUKCES! Zapisano.");
-        res.status(201).json({ message: "Przedmiot dodany pomyślnie!" });
+        // Łączymy dane
+        const dziennik = studenci.map(student => {
+            const jegoOceny = ocenyDb.find(o => o.indeks === student.login);
+            return {
+                imie: student.imie,
+                nazwisko: student.nazwisko,
+                login: student.login,
+                awatar: student.zdjecieURL,
+                ocenyCzastkowe: jegoOceny ? jegoOceny.oceny : [],
+                ocenaKoncowa: jegoOceny ? jegoOceny.ocenaKoncowa : null
+            };
+        });
+
+        res.json({
+            przedmiot: lekcja.nazwa,
+            typ: lekcja.typ,
+            klasa: lekcja.grupaZaj,
+            studenci: dziennik
+        });
 
     } catch (error) {
-        console.error("5. BŁĄD KRYTYCZNY:", error); // <-- To pokaże nam przyczynę w terminalu
-        res.status(400).json({ message: "Błąd serwera: " + error.message });
+        console.error("Błąd dziennika:", error);
+        res.status(500).json({ message: error.message });
     }
 });
 
-// --- Endpoint do dodawania oceny cząstkowej ---
+// 2. PUT: DODAJ OCENĘ (Tworzy kartę przedmiotu z odpowiednim TYPEM)
 app.put('/api/dodaj-ocene-czastkowa', async (req, res) => {
-    // 1. Pobieramy dane z formularza
-    const { indeks, przedmiot, nowaOcena } = req.body;
-    
-    // Logujemy dla pewności co przyszło
-    console.log("Dodawanie oceny dla:", indeks, przedmiot); 
-    console.log("Dane oceny:", nowaOcena);
+    // Frontend musi wysłać 'zajeciaId', żebyśmy wiedzieli czy to Lab czy Wykład
+    const { indeks, zajeciaId, nowaOcena } = req.body;
 
     try {
-        // 2. Szukamy przedmiotu tego studenta
-        // UWAGA: Musi się zgadzać INDEKS i NAZWA PRZEDMIOTU
-        const przedmiotDb = await Ocena.findOne({ 
+        const lekcja = await Zajecia.findById(zajeciaId);
+        if (!lekcja) return res.status(404).json({ message: "Błąd: Nie znaleziono zajęć." });
+
+        // Szukamy karty ocen (Student + Przedmiot + Typ)
+        let przedmiotDb = await Ocena.findOne({ 
             indeks: indeks, 
-            przedmiot: przedmiot 
+            przedmiot: lekcja.nazwa,
+            typ: lekcja.typ 
         });
 
-        // 3. Sprawdzamy czy znaleziono
+        // Jeśli nie ma karty, tworzymy nową
         if (!przedmiotDb) {
-            console.log("Nie znaleziono przedmiotu!");
-            return res.status(404).json({ message: "Nie znaleziono takiego przedmiotu dla tego studenta" });
+            przedmiotDb = new Ocena({
+                indeks: indeks,
+                przedmiot: lekcja.nazwa,
+                typ: lekcja.typ,
+                prowadzacy: lekcja.prowadzacy,
+                ects: "0",
+                oceny: []
+            });
         }
 
-        // 4. Dodajemy ocenę do tablicy (push)
+        // Dodajemy ocenę
         przedmiotDb.oceny.push({
             wartosc: nowaOcena.wartosc,
             opis: nowaOcena.opis,
-            data: new Date(),
-            wstawil: nowaOcena.wstawil || "Nieznany"
+            wstawil: nowaOcena.wstawil,
+            data: new Date()
         });
 
-        // 5. Zapisujemy zmiany
         await przedmiotDb.save();
-
-        console.log("Sukces! Ocena dodana.");
-        res.json({ message: "Dodano ocenę cząstkową!" });
+        res.json({ message: "Dodano ocenę!" });
 
     } catch (error) {
-        console.error("Błąd serwera:", error);
+        console.error("Błąd dodawania oceny:", error);
         res.status(500).json({ message: "Błąd serwera: " + error.message });
     }
 });
 
-
-// GET: Pobierz listę wszystkich unikalnych przedmiotów w systemie
-app.get('/api/lista-przedmiotow', async (req, res) => {
-    try {
-        // "distinct" wyciąga unikalne wartości z pola "przedmiot"
-        const przedmioty = await Ocena.distinct("przedmiot");
-        res.json(przedmioty);
-    } catch (error) {
-        res.status(500).json({ message: "Błąd: " + error.message });
+// 3. GET: POBIERANIE OCEN STUDENTA (Dla widoku studenta)
+app.get('/api/oceny/:indeks', async (req, res) => {
+    try{
+        const indeksStudenta = req.params.indeks;
+        // Zwracamy wszystkie karty ocen tego studenta (Wykłady, Laby itd.)
+        const oceny = await Ocena.find({ indeks: indeksStudenta});
+        res.json(oceny);
+    } catch(error) {
+        res.status(500).json({message: "Błąd pobierania ocen: " + error.message});
     }
 });
 
-// 1. GET: Pobierz wszystkie oceny wystawione przez konkretnego nauczyciela
-app.get('/api/nauczyciel/wystawione-oceny/:nauczycielId', async (req, res) => {
-    const { nauczycielId } = req.params;
-
-    try {
-        // Szukamy dokumentów, które w tablicy 'oceny' mają wpis z danym 'wstawil'
-        const dokumenty = await Ocena.find({ "oceny.wstawil": nauczycielId });
-
-        let znalezioneOceny = [];
-
-        // Musimy "ręcznie" przefiltrować tablice, żeby wyciągnąć tylko te konkretne oceny
-        dokumenty.forEach(doc => {
-            doc.oceny.forEach(ocena => {
-                if (ocena.wstawil === nauczycielId) {
-                    znalezioneOceny.push({
-                        // Musimy wiedzieć KOGO i Z CZEGO dotyczy ocena, żeby ją potem usunąć
-                        studentIndeks: doc.indeks,
-                        przedmiot: doc.przedmiot,
-                        // Dane samej oceny
-                        ocenaId: ocena._id, // WAŻNE: To unikalne ID oceny
-                        wartosc: ocena.wartosc,
-                        opis: ocena.opis,
-                        data: ocena.data
-                    });
-                }
-            });
-        });
-
-        res.json(znalezioneOceny);
-
-    } catch (error) {
-        res.status(500).json({ message: "Błąd serwera: " + error.message });
-    }
-});
-
-// 2. DELETE: Usuń konkretną ocenę cząstkową
+// 4. DELETE: USUWANIE OCENY
 app.delete('/api/oceny/usun', async (req, res) => {
-    // Potrzebujemy 3 informacji, żeby trafić w cel
     const { studentIndeks, przedmiot, ocenaId } = req.body;
-
     try {
-        // Używamy $pull - to komenda MongoDB "wyciągnij z tablicy element o danym ID"
+        // Uwaga: Tutaj usuwamy po indeksie i przedmiocie. 
+        // Jeśli będziesz miał duplikaty nazw (Wykład/Lab), może być potrzebne też 'typ'.
+        // Ale na razie MongoDB znajdzie pierwszy pasujący dokument z tym ID oceny.
         const wynik = await Ocena.updateOne(
-            { indeks: studentIndeks, przedmiot: przedmiot },
+            { indeks: studentIndeks, przedmiot: przedmiot, "oceny._id": ocenaId },
             { $pull: { oceny: { _id: ocenaId } } }
         );
 
         if (wynik.modifiedCount > 0) {
-            res.json({ message: "Ocena została usunięta." });
+            res.json({ message: "Ocena usunięta." });
         } else {
-            res.status(404).json({ message: "Nie znaleziono oceny lub już została usunięta." });
+            res.status(404).json({ message: "Nie znaleziono oceny." });
         }
-
     } catch (error) {
         res.status(500).json({ message: "Błąd usuwania: " + error.message });
     }
 });
 
+// ==========================================
+// NOWY ENDPOINT: Wstawianie Oceny Końcowej
+// ==========================================
+app.put('/api/wstaw-ocene-koncowa', async (req, res) => {
+    const { indeks, zajeciaId, ocenaKoncowa } = req.body;
 
+    try {
+        // 1. Sprawdzamy co to za zajęcia (żeby znać przedmiot i typ)
+        const lekcja = await Zajecia.findById(zajeciaId);
+        if (!lekcja) return res.status(404).json({ message: "Nie znaleziono zajęć." });
 
+        // 2. Szukamy karty ocen studenta
+        let przedmiotDb = await Ocena.findOne({ 
+            indeks: indeks, 
+            przedmiot: lekcja.nazwa,
+            typ: lekcja.typ 
+        });
+
+        // 3. Jeśli karta nie istnieje (student nie ma żadnych ocen), tworzymy ją
+        if (!przedmiotDb) {
+            przedmiotDb = new Ocena({
+                indeks: indeks,
+                przedmiot: lekcja.nazwa,
+                typ: lekcja.typ,
+                prowadzacy: lekcja.prowadzacy,
+                ects: "0",
+                oceny: [],
+                ocenaKoncowa: null
+            });
+        }
+
+        // 4. Aktualizujemy ocenę końcową
+        przedmiotDb.ocenaKoncowa = ocenaKoncowa;
+
+        await przedmiotDb.save();
+
+        res.json({ message: `Wystawiono ocenę końcową: ${ocenaKoncowa}` });
+
+    } catch (error) {
+        console.error("Błąd oceny końcowej:", error);
+        res.status(500).json({ message: "Błąd serwera: " + error.message });
+    }
+});
 
 
 //ZAJECIA

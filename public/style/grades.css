@@ -5,9 +5,7 @@
 
 }
 
-.grades{
-    display: none;
-}
+
 
 .grades-container{
     width: fit-content;
@@ -54,9 +52,6 @@ box-shadow: 1px 1px 19px 1px rgba(71, 145, 255, 1);
 
 /* NIZEJ JEST CCS DO WSTAWIANIA OCEN*/
         
-.add-grade{
-    display: none;
-}
 
 .container 
 { 
@@ -185,3 +180,31 @@ button:hover
     max-height: 200px;
     overflow-y: scroll;
 }
+
+
+/* --- NOWY STYL OCEN --- */
+.ocena-circle {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin: 3px;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Lekki cień dla głębi */
+    cursor: help;
+    transition: transform 0.2s;
+}
+
+.ocena-circle:hover {
+    transform: scale(1.1); /* Powiększenie po najechaniu */
+}
+
+/* Kolory dla konkretnych ocen */
+.grade-super { background: #2e7d32; color: white; border: 2px solid #1b5e20; } /* 5 */
+.grade-good  { background: #1565c0; color: white; border: 2px solid #0d47a1; } /* 4, 4.5 */
+.grade-ok    { background: #ffca28; color: #222;   border: 2px solid #ff8f00; } /* 3, 3.5 -> Ciemny tekst! */
+.grade-bad   { background: #d32f2f; color: white; border: 2px solid #b71c1c; } /* 2, 2.5 */
+.grade-none  { background: #e0e0e0; color: #555;   border: 2px solid #9e9e9e; }

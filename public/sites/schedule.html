@@ -12,6 +12,34 @@
     <script src="../scripts/auth.js"></script>
     <script src="../scripts/admin_site_link.js"></script>
 </head>
+
+
+<style>
+      nav .animation {
+        position: absolute;
+        left: 188px;
+        width: 160px;
+        height: 50px;
+        background-color: #333a41;
+        border-radius: 10px;
+        transition: all 0.3s ease 0s;
+      }
+      nav a:nth-of-type(1):hover ~ .animation{
+        transform: translate(-178px);
+      }
+
+      nav a:nth-of-type(3):hover ~ .animation {
+        transform: translateX(178px);
+      }
+      nav a:nth-of-type(4):hover ~ .animation {
+        transform: translateX(360px);
+      }
+      nav a:nth-of-type(5):hover ~ .animation{
+        transform: translateX(568px) scaleX(150%);
+      }
+    </style>
+
+
 <body>
     <nav>
       <a href="../index.html">AKTUALNOŚCI</a>
