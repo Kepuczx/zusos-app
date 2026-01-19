@@ -39,6 +39,7 @@
     min-width: 320px;
     overflow-y: auto;
     overflow-x: auto;
+    white-space: pre-line;
 }
 .main-container h1{
     margin-bottom: 10px;

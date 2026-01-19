@@ -108,6 +108,7 @@ async function pobierzPlan() {
             lesson.innerHTML = `
     <div class="lesson-time">${z.godzinaOd} - ${z.godzinaDo}</div>
     <strong>${z.nazwa}</strong>
+    <div class="lesson-klasa">Klasa: ${z.grupaZaj}</div>
     ${z.sala ? `<div class="lesson-sala">Sala: ${z.sala}</div>` : ''}
     ${z.prowadzacy ? `<div class="lesson-prowadzacy">Prowadzący: ${z.prowadzacy}</div>` : ''}
 `;

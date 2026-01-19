@@ -249,6 +249,8 @@
     <input type="time" id="z_do">
     <input type="text" id="z_sala" placeholder="Sala">
     <input type="text" id="z_grupa" placeholder="Grupa (np. 1A / lab1)">
+    <input type="text" id="z_typ" placeholder="Typ zajęć (np. Wykład / Lab)">
+
 
     <button onclick="zapiszZajecia()">Zapisz</button>
     <button onclick="anulujEdycje()" style="background:#999; display:none" id="cancelBtn">
@@ -270,37 +272,40 @@ async function pobierzZajecia() {
     lista.innerHTML = '<h3>Lista zajęć</h3>';
 
     data.forEach(z => {
-        const div = document.createElement('div');
-        div.className = 'artykul';
-        div.innerHTML = `
-            <div style="flex:1">
-                <strong>${z.nazwa}</strong><br>
-                ${z.dzien} ${z.godzinaOd}–${z.godzinaDo}<br>
-                sala ${z.sala} | grupa ${z.grupaZaj}<br>
-                <small>${z.prowadzacy}</small><br><br>
+    const div = document.createElement('div');
+    div.className = 'artykul';
+    div.innerHTML = `
+        <div style="flex:1">
+            <strong>${z.nazwa}</strong><br>
+            ${z.dzien} ${z.godzinaOd}–${z.godzinaDo}<br>
+            sala ${z.sala} | grupa ${z.grupaZaj}<br>
+            <small>${z.prowadzacy}</small><br><br>
+            <button class="editBtn">✏️ Edytuj</button>
+            <button class="deleteBtn" style="background:#dc3545">🗑️ Usuń</button>
+        </div>
+    `;
+    lista.appendChild(div);
 
-                <button onclick='edytujZajecia(${JSON.stringify(z)})'>✏️ Edytuj</button>
-                <button onclick="usunZajecia('${z._id}')" style="background:#dc3545">
-                    🗑️ Usuń
-                </button>
-            </div>
-        `;
-        lista.appendChild(div);
-    });
+    // Eventy
+    div.querySelector('.editBtn').addEventListener('click', () => edytujZajecia(z));
+    div.querySelector('.deleteBtn').addEventListener('click', () => usunZajecia(z._id));
+});
+
 }
 
 
 // ➕ POST / ✏️ PUT
 async function zapiszZajecia() {
     const body = {
-        nazwa: z_nazwa.value,
-        prowadzacy: z_prowadzacy.value,
-        dzien: z_dzien.value,
-        godzinaOd: z_od.value,
-        godzinaDo: z_do.value,
-        sala: z_sala.value,
-        grupaZaj: z_grupa.value
-    };
+    nazwa: z_nazwa.value,
+    prowadzacy: z_prowadzacy.value,
+    dzien: z_dzien.value,
+    godzinaOd: z_od.value,
+    godzinaDo: z_do.value,
+    sala: z_sala.value,
+    grupaZaj: z_grupa.value,
+    typ: z_typ.value // <-- nowy typ
+};
 
     const method = edytowaneId ? 'PUT' : 'POST';
     const url = edytowaneId ? `/api/zajecia/${edytowaneId}` : '/api/zajecia';
@@ -334,7 +339,8 @@ function edytujZajecia(z) {
     z_od.value = z.godzinaOd;
     z_do.value = z.godzinaDo;
     z_sala.value = z.sala || '';
-    z_grupa.value = z.grupaZaj;
+    z_grupa.value = z.grupaZaj || '';
+    z_typ.value = z.typ || '';
 }
 
 
