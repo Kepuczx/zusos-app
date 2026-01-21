@@ -71,23 +71,28 @@ function renderTable(users) {
 
 // 4. Funkcja otwierająca Modal
 function otworzEdycje(id) {
-    // Szukamy użytkownika w pamięci
     const user = allUsers.find(u => u._id === id);
     if (!user) return;
 
-    // Wypełniamy pola tekstowe
     document.getElementById('edit_id').value = user._id;
     document.getElementById('edit_imie').value = user.imie;
     document.getElementById('edit_nazwisko').value = user.nazwisko;
     document.getElementById('edit_login').value = user.login;
-    
-    // Ustawiamy selecty (Klasa i Status)
     document.getElementById('edit_klasa').value = user.klasa; 
-    
-    // Ustawiamy status (domyślnie aktywny, jeśli brak w bazie)
     document.getElementById('edit_status').value = user.status || 'aktywny';
 
-    // Pokazujemy okno
+    // Resetujemy pole pliku (nie da się ustawić wartości pliku z kodu ze względów bezpieczeństwa)
+    document.getElementById('edit_zdjecie_plik').value = "";
+
+    // Opcjonalnie: Pokaż podgląd aktualnego zdjęcia
+    const preview = document.getElementById('edit_preview');
+    if(user.zdjecieURL && user.zdjecieURL !== '../images/awatar.png') {
+        preview.src = user.zdjecieURL;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+
     document.getElementById('editModal').classList.add('active');
 }
 
@@ -96,33 +101,40 @@ function zamknijModal() {
     document.getElementById('editModal').classList.remove('active');
 }
 
-// 6. Funkcja zapisująca zmiany (Wysyła PUT do serwera)
+// 6. Funkcja zapisująca zmiany (Wersja z PLIKIEM - FormData)
 async function zapiszZmiany() {
     const id = document.getElementById('edit_id').value;
+    const plikInput = document.getElementById('edit_zdjecie_plik');
+
+    // Tworzymy FormData zamiast JSON
+    const formData = new FormData();
     
-    // Pobieramy dane z formularza
-    const daneDoWyslania = {
-        imie: document.getElementById('edit_imie').value,
-        nazwisko: document.getElementById('edit_nazwisko').value,
-        login: document.getElementById('edit_login').value,
-        klasa: document.getElementById('edit_klasa').value,
-        // Dodajemy STATUS do wysyłanych danych
-        status: document.getElementById('edit_status').value 
-    };
+    formData.append('imie', document.getElementById('edit_imie').value);
+    formData.append('nazwisko', document.getElementById('edit_nazwisko').value);
+    formData.append('login', document.getElementById('edit_login').value);
+    formData.append('klasa', document.getElementById('edit_klasa').value);
+    formData.append('status', document.getElementById('edit_status').value);
+
+    // Dodajemy plik TYLKO jeśli został wybrany
+    if (plikInput.files.length > 0) {
+        formData.append('zdjecie', plikInput.files[0]);
+    }
 
     try {
+        // UWAGA: Przy FormData NIE ustawiamy nagłówka 'Content-Type': 'application/json'
+        // Przeglądarka sama ustawi odpowiedni typ 'multipart/form-data'
         const response = await fetch(`/api/uzytkownicy/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(daneDoWyslania)
+            body: formData 
         });
 
         if (response.ok) {
             alert("Zapisano zmiany!");
             zamknijModal();
-            pobierzUzytkownikow(); // Odświeżamy listę na stronie
+            pobierzUzytkownikow(); // Odśwież listę
         } else {
-            alert("Wystąpił błąd podczas zapisu.");
+            const err = await response.json();
+            alert("Błąd: " + err.message);
         }
     } catch (error) {
         console.error("Błąd zapisu:", error);

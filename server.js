@@ -145,30 +145,57 @@ app.delete('/api/uzytkownicy/:id', async (req, res) => {
     }
 });
 
-// 3. PUT: Edytuj dane użytkownika (Imie, Nazwisko, Login, Klasa)
-app.put('/api/uzytkownicy/:id', async (req, res) => {
+// PUT: Edycja użytkownika ze zdjęciem (Multer + Cloudinary)
+app.put('/api/uzytkownicy/:id', upload.single('zdjecie'), async (req, res) => {
     try {
         const idDoEdycji = req.params.id;
-        // Pobieramy dane z formularza. UWAGA: używamy pola 'klasa'
-        const { imie, nazwisko, login, klasa ,status} = req.body;
+        
+        // 1. Znajdź starego użytkownika (żeby wiedzieć co usunąć z Cloudinary)
+        const staryUzytkownik = await Student.findById(idDoEdycji);
+        if (!staryUzytkownik) {
+            return res.status(404).json({ message: "Nie znaleziono użytkownika" });
+        }
 
+        // Przygotuj obiekt z nowymi danymi (z pól tekstowych)
+        let updateData = {
+            imie: req.body.imie,
+            nazwisko: req.body.nazwisko,
+            login: req.body.login,
+            klasa: req.body.klasa,
+            status: req.body.status
+        };
+
+        // 2. SPRAWDŹ CZY PRZESŁANO NOWY PLIK
+        if (req.file) {
+            // A. Jeśli użytkownik miał wcześniej zdjęcie na Cloudinary -> USUŃ JE
+            if (staryUzytkownik.zdjecieURL && staryUzytkownik.zdjecieURL.includes('cloudinary')) {
+                const nazwaPliku = staryUzytkownik.zdjecieURL.split('/').pop().split('.')[0];
+                const publicId = `szkola_aktualnosci/${nazwaPliku}`; // Upewnij się, że folder pasuje do configu Multera
+                
+                // Usuwamy w tle (nie czekamy, żeby nie blokować odpowiedzi)
+                cloudinary.uploader.destroy(publicId, (err, result) => {
+                    if (err) console.log("Błąd usuwania starego zdjęcia:", err);
+                    else console.log("Usunięto stare zdjęcie:", result);
+                });
+            }
+
+            // B. Zapisz URL nowego zdjęcia
+            updateData.zdjecieURL = req.file.path;
+        } 
+        // Jeśli nie przesłano pliku, 'zdjecieURL' pozostaje bez zmian (nie dodajemy go do updateData)
+
+        // 3. Aktualizuj w bazie
         const zaktualizowanyUzytkownik = await Student.findByIdAndUpdate(
             idDoEdycji,
-            { 
-                imie: imie, 
-                nazwisko: nazwisko, 
-                login: login, 
-                klasa: klasa,
-                status: status
-            },
-            { new: true } // Opcja, żeby baza zwróciła już nowy, poprawiony obiekt
+            updateData,
+            { new: true }
         );
 
         res.json(zaktualizowanyUzytkownik);
 
     } catch (error) {
         console.error("Błąd edycji:", error);
-        res.status(500).json({ message: "Błąd edycji danych" });
+        res.status(500).json({ message: "Błąd serwera: " + error.message });
     }
 });
 
